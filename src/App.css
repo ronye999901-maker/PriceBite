@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(249, 115, 22, 0.6);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 🌟 ACCORDION CARD SLIDER TRANSITIONS */
+.accordion-card-item {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  will-change: width, flex, transform;
+}
+
+.accordion-card-item:hover {
+  border-color: #f97316 !important;
+  box-shadow: 0 20px 40px -10px rgba(249, 115, 22, 0.35), 0 0 20px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* ☀️ CLASSY & HIGH-CONTRAST LIGHT THEME MODE OVERRIDES */
+.light-mode {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Headings & Main Text High-Contrast Contrast Rules */
+.light-mode h1,
+.light-mode h2,
+.light-mode h3,
+.light-mode h4,
+.light-mode h5,
+.light-mode h6,
+.light-mode .text-slate-100,
+.light-mode .text-slate-200,
+.light-mode .text-white {
+  color: #0f172a !important;
+}
+
+.light-mode p,
+.light-mode span.text-slate-300,
+.light-mode span.text-slate-400,
+.light-mode div.text-slate-300,
+.light-mode div.text-slate-400,
+.light-mode p.text-slate-300,
+.light-mode p.text-slate-400,
+.light-mode .text-slate-300,
+.light-mode .text-slate-400 {
+  color: #475569 !important;
+}
+
+/* Light Mode Card & Background Overrides */
+.light-mode .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light-mode .bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+.light-mode .bg-slate-900\/60 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-mode .bg-slate-950\/60,
+.light-mode .bg-slate-950\/80,
+.light-mode .bg-slate-950\/90 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light-mode .border-slate-800,
+.light-mode .border-slate-800\/80,
+.light-mode .border-slate-800\/90 {
+  border-color: #e2e8f0 !important;
+}
+
+.light-mode .accordion-card-item {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light-mode .accordion-card-item:hover {
+  border-color: #f97316 !important;
+  box-shadow: 0 15px 35px -5px rgba(249, 115, 22, 0.25) !important;
+}
