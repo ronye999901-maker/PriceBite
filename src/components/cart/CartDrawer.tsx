@@ -9,7 +9,8 @@ interface CartDrawerProps {
   onUpdateQuantity: (cartItemId: string, newQty: number) => void;
   onRemoveItem: (cartItemId: string) => void;
   onClearCart: () => void;
-  onCheckoutSuccess: (items: CartItem[], totalAmount: number) => void;
+  onInitiatePayment?: (items: CartItem[], totalAmount: number) => void;
+  onCheckoutSuccess?: (items: CartItem[], totalAmount: number) => void;
   currentPinDetails: PINCodeDetails | null;
   themeMode: ThemeMode;
 }
@@ -21,11 +22,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onUpdateQuantity,
   onRemoveItem,
   onClearCart,
+  onInitiatePayment,
   onCheckoutSuccess,
   currentPinDetails,
   themeMode,
 }) => {
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
 
   useEffect(() => {
@@ -47,14 +48,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     ? `${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
     : 'Select Delivery Location';
 
-  const handleCheckout = () => {
-    setIsCheckingOut(true);
-    setTimeout(() => {
+  const handleCheckoutClick = () => {
+    if (onInitiatePayment) {
+      onInitiatePayment([...cartItems], grandTotal);
+      onClose();
+    } else if (onCheckoutSuccess) {
       onCheckoutSuccess([...cartItems], grandTotal);
       onClearCart();
-      setIsCheckingOut(false);
       setIsOrderCompleted(true);
-    }, 1200);
+    }
   };
 
   return (
@@ -62,13 +64,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={onClose} />
 
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-        <div className={`w-screen max-w-md shadow-2xl flex flex-col justify-between border-l transition-colors ${
-          isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
-        }`}>
+        <div
+          className={`w-screen max-w-md shadow-2xl flex flex-col justify-between border-l transition-colors ${
+            isDark ? 'glass-card border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
+          }`}
+        >
           {/* Header */}
-          <div className={`p-5 border-b flex items-center justify-between ${
-            isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div
+            className={`p-5 border-b flex items-center justify-between ${
+              isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}
+          >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-2xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-xl border border-orange-500/30">
                 🛒
@@ -120,7 +126,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <div
                   key={item.id}
                   className={`p-4 rounded-2xl border flex items-center space-x-3 transition-all ${
-                    isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                    isDark ? 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700' : 'bg-slate-50 border-slate-200'
                   }`}
                 >
                   <img src={item.imageUrl} alt={item.productName} className="w-14 h-14 rounded-xl object-cover" />
@@ -144,9 +150,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
 
-                    <div className={`flex items-center space-x-2 px-2 py-1 rounded-xl border ${
-                      isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-300'
-                    }`}>
+                    <div
+                      className={`flex items-center space-x-2 px-2 py-1 rounded-xl border ${
+                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-300'
+                      }`}
+                    >
                       <button
                         onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                         className="text-orange-400 font-black text-xs px-1"
@@ -169,9 +177,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
           {/* Footer Checkout Summary */}
           {cartItems.length > 0 && !isOrderCompleted && (
-            <div className={`p-5 border-t space-y-4 ${
-              isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
-            }`}>
+            <div
+              className={`p-5 border-t space-y-4 ${
+                isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}
+            >
               <div className="flex items-center space-x-2 text-xs text-amber-400 font-bold">
                 <MapPin className="w-4 h-4" />
                 <span className="truncate">Delivery: {locText}</span>
@@ -197,18 +207,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
 
               <button
-                onClick={handleCheckout}
-                disabled={isCheckingOut}
-                className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-400 hover:to-yellow-400 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-xl shadow-orange-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                onClick={handleCheckoutClick}
+                className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-400 hover:to-yellow-400 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-xl shadow-orange-500/25 transition-all flex items-center justify-center space-x-2"
               >
-                {isCheckingOut ? (
-                  <span>Processing Payment...</span>
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4" />
-                    <span>Checkout & Place Order (₹{grandTotal})</span>
-                  </>
-                )}
+                <Zap className="w-4 h-4" />
+                <span>Pay ₹{grandTotal} via UPI & Track Live →</span>
               </button>
             </div>
           )}

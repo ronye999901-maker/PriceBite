@@ -18,13 +18,29 @@ import { PriceBiteDirectHub } from './components/direct/PriceBiteDirectHub';
 import { QuickMartHub } from './components/direct/QuickMartHub';
 import { AuthModal } from './components/auth/AuthModal';
 import { CartDrawer } from './components/cart/CartDrawer';
+import { UPIPaymentModal } from './components/checkout/UPIPaymentModal';
+import { OrderTrackingModal } from './components/tracking/OrderTrackingModal';
+import { OrderReceiptModal } from './components/receipt/OrderReceiptModal';
 
 import { getProductsForLocation, getRestaurantsForLocation } from './mock/foodData';
-import { LanguageCode, PINCodeDetails, PlatformResult, ProductComparisonItem, UserProfile as UserProfileType, CartItem, OrderRecord, ThemeMode } from './types';
+import {
+  LanguageCode,
+  PINCodeDetails,
+  PlatformResult,
+  ProductComparisonItem,
+  UserProfile as UserProfileType,
+  CartItem,
+  OrderRecord,
+  ThemeMode,
+} from './types';
 import { evaluateProductMatch } from './engine/matchingEngine';
 import { enrichPlatformResultsWithSavings } from './engine/priceEngine';
-import { getTranslation } from './i18n';
-import { syncUserProfileToCloud, createDirectOrderInCloud, fetchUserOrdersFromCloud, syncPriceAlertToCloud } from './lib/supabase';
+import {
+  syncUserProfileToCloud,
+  createDirectOrderInCloud,
+  fetchUserOrdersFromCloud,
+  syncPriceAlertToCloud,
+} from './lib/supabase';
 import { MapPin, Smartphone, CheckCircle } from 'lucide-react';
 
 export function App() {
@@ -47,7 +63,9 @@ export function App() {
   // STRICTLY USER INPUT ONLY — NO HARDCODED DEFAULT PIN CODE
   const [currentPinDetails, setCurrentPinDetails] = useState<PINCodeDetails | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'home' | 'direct' | 'quickmart' | 'search' | 'restaurants' | 'rewards' | 'profile' | 'admin'>('home');
+  const [activeTab, setActiveTab] = useState<
+    'home' | 'direct' | 'quickmart' | 'search' | 'restaurants' | 'rewards' | 'profile' | 'admin'
+  >('home');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Location-aware dynamic datasets
@@ -69,6 +87,17 @@ export function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // New UPI Payment, Tracking & Receipt Modals state
+  const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
+  const [pendingCheckoutItems, setPendingCheckoutItems] = useState<CartItem[]>([]);
+  const [pendingCheckoutTotal, setPendingCheckoutTotal] = useState(0);
+
+  const [activeTrackingOrder, setActiveTrackingOrder] = useState<OrderRecord | null>(null);
+  const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
+
+  const [activeReceiptOrder, setActiveReceiptOrder] = useState<OrderRecord | null>(null);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+
   const [breakdownPlatform, setBreakdownPlatform] = useState<PlatformResult | null>(null);
   const [breakdownProductName, setBreakdownProductName] = useState('');
 
@@ -78,7 +107,10 @@ export function App() {
   const [isDealBotOpen, setIsDealBotOpen] = useState(false);
   const [isVoiceSearchOpen, setIsVoiceSearchOpen] = useState(false);
 
-  const [redirectingPlatform, setRedirectingPlatform] = useState<{ platform: PlatformResult; productName: string } | null>(null);
+  const [redirectingPlatform, setRedirectingPlatform] = useState<{
+    platform: PlatformResult;
+    productName: string;
+  } | null>(null);
 
   // Persistent User Profile with Cart & Order History Database
   const [userProfile, setUserProfile] = useState<UserProfileType>(() => {
@@ -86,7 +118,6 @@ export function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Purge legacy dummy profiles from browser cache
         if (parsed.email === 'sayan@pricebite.in' || parsed.name === 'Sayan Chowdhury' || parsed.id === 'user-1') {
           localStorage.removeItem('pricebite_user_db');
         } else {
@@ -126,6 +157,47 @@ export function App() {
     localStorage.setItem('pricebite_theme', nextTheme);
   };
 
+  // Filter products based on active PIN code and optional category query
+  const handleSearchWithDataset = (query: string, sourceDataset: ProductComparisonItem[]) => {
+    setSearchQuery(query);
+    if (!query || query.trim() === '') {
+      setSearchResults(sourceDataset);
+      return;
+    }
+
+    const q = query.toLowerCase().trim();
+    const filtered = sourceDataset.filter((item) => {
+      const nameMatch = item.name.toLowerCase().includes(q);
+      const categoryMatch = item.category.toLowerCase().includes(q);
+      const brandMatch = item.restaurantOrBrand.toLowerCase().includes(q);
+      const descMatch = item.description.toLowerCase().includes(q);
+      return nameMatch || categoryMatch || brandMatch || descMatch;
+    });
+
+    const evaluated = filtered.map((item) => {
+      const matchEval = evaluateProductMatch(
+        item.name,
+        item.name,
+        item.category,
+        item.category,
+        item.restaurantOrBrand,
+        item.restaurantOrBrand
+      );
+
+      const enrichedPlatforms = enrichPlatformResultsWithSavings(item.platformResults);
+
+      return {
+        ...item,
+        matchType: matchEval.matchType,
+        matchScore: matchEval.matchScore,
+        matchNotes: matchEval.matchNotes,
+        platformResults: enrichedPlatforms,
+      };
+    });
+
+    setSearchResults(evaluated);
+  };
+
   // Re-calculate datasets whenever PIN code changes
   useEffect(() => {
     const freshProducts = getProductsForLocation(currentPinDetails);
@@ -136,117 +208,7 @@ export function App() {
 
     // Re-evaluate active search with new location PIN context
     handleSearchWithDataset(searchQuery, freshProducts);
-  }, [currentPinDetails]);
-
-  const handleSearchWithDataset = (query: string, availableProducts: ProductComparisonItem[]) => {
-    const q = query.trim();
-    setSearchQuery(q);
-
-    if (!q) {
-      setSearchResults(availableProducts);
-      return;
-    }
-
-    // Filter products strictly matching search terms for this PIN code
-    const filtered = availableProducts.filter((item) => {
-      const match = evaluateProductMatch(q, item.name, item.restaurantOrBrand, item.quantity, item.category, item.description);
-      return match.matchScore > 0 && match.matchType !== 'DIFFERENT';
-    }).map((item) => {
-      const match = evaluateProductMatch(q, item.name, item.restaurantOrBrand, item.quantity, item.category, item.description);
-      const enrichedResults = enrichPlatformResultsWithSavings(item.platformResults);
-
-      return {
-        ...item,
-        matchType: match.matchType,
-        matchScore: match.matchScore,
-        matchNotes: match.matchNotes,
-        platformResults: enrichedResults,
-      };
-    });
-
-    if (filtered.length === 0) {
-      const locText = currentPinDetails ? `${currentPinDetails.area}` : 'Local Outlets';
-      const dynamicProduct: ProductComparisonItem = {
-        id: `dynamic-${Date.now()}`,
-        name: `${q.charAt(0).toUpperCase() + q.slice(1)} (${locText})`,
-        category: 'food',
-        restaurantOrBrand: currentPinDetails ? `Top Verified Outlet in ${currentPinDetails.district}` : 'Top Rated Restaurant',
-        quantity: 'Standard Portion',
-        imageUrl: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
-        description: `Verified comparison results for ${q} ${currentPinDetails ? `delivered to ${currentPinDetails.area}` : ''}.`,
-        isVeg: false,
-        matchType: 'EXACT',
-        matchScore: 95,
-        matchNotes: `✅ Exact Match: Live platform prices calculated for "${q}".`,
-        platformResults: enrichPlatformResultsWithSavings([
-          {
-            platformId: 'pricebite',
-            platformName: 'PriceBite Direct Store (In-App)',
-            platformLogo: '⚡',
-            rating: 4.9,
-            ratingCount: 1420,
-            deliveryTimeMinutes: 15,
-            inStock: true,
-            orderUrl: '#pricebite-direct',
-            isDirectAppOrder: true,
-            appliedCoupons: ['PRICEBITE_50'],
-            appliedBankOffers: ['UPI_CASHBACK'],
-            priceBreakdown: {
-              basePrice: 220,
-              discount: 40,
-              couponDiscount: 20,
-              bankDiscount: 0,
-              deliveryFee: 10,
-              platformFee: 0,
-              packagingFee: 10,
-              taxes: 9,
-              finalPayablePrice: 189,
-              cashback: 15,
-              effectiveCost: 174,
-              savingsVsHighest: 40,
-              savingsVsNextCheapest: 25,
-            },
-          },
-          {
-            platformId: 'swiggy',
-            platformName: 'Swiggy',
-            platformLogo: '🧡',
-            rating: 4.6,
-            ratingCount: 1420,
-            deliveryTimeMinutes: 24,
-            inStock: true,
-            orderUrl: `https://www.swiggy.com/search?query=${encodeURIComponent(q)}`,
-            appliedCoupons: ['SWIGGYSPECIAL'],
-            appliedBankOffers: ['HDFC_CARD'],
-            priceBreakdown: {
-              basePrice: 220,
-              discount: 40,
-              couponDiscount: 20,
-              bankDiscount: 0,
-              deliveryFee: 25,
-              platformFee: 6,
-              packagingFee: 12,
-              taxes: 11,
-              finalPayablePrice: 214,
-              cashback: 15,
-              effectiveCost: 199,
-              savingsVsHighest: 15,
-              savingsVsNextCheapest: 15,
-            },
-          },
-        ]),
-        cheapestPlatformId: 'pricebite',
-        fastestPlatformId: 'pricebite',
-        bestValuePlatformId: 'pricebite',
-        bestRewardsPlatformId: 'pricebite',
-        smartPickPlatformId: 'pricebite',
-      };
-
-      setSearchResults([dynamicProduct]);
-    } else {
-      setSearchResults(filtered);
-    }
-  };
+  }, [currentPinDetails, searchQuery]);
 
   const handleSearch = (query: string) => {
     setActiveTab('search');
@@ -314,121 +276,152 @@ export function App() {
     setUserProfile((prev) => ({ ...prev, cart: [] }));
   };
 
-  const handleCheckoutSuccess = (items: CartItem[], totalAmount: number) => {
+  // Initiate Payment Gateway Flow from Cart
+  const handleInitiatePayment = (items: CartItem[], totalAmount: number) => {
+    setPendingCheckoutItems(items);
+    setPendingCheckoutTotal(totalAmount);
+    setIsCartOpen(false);
+    setIsUPIModalOpen(true);
+  };
+
+  // Handle successful UPI payment completion & launch live tracker
+  const handlePaymentSuccess = (details: {
+    transactionId: string;
+    paymentMethod: string;
+    amount: number;
+    items: CartItem[];
+    deliveryPinCode: string;
+  }) => {
     const newOrder: OrderRecord = {
-      id: `#PB-${(Math.random() * 90000 + 10000).toFixed(0)}`,
-      date: 'Just now',
-      items,
-      totalAmount,
+      id: details.transactionId.replace('UPI-PB-', ''),
+      date: 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      items: details.items,
+      totalAmount: details.amount,
       status: 'In Transit',
-      deliveryPinCode: currentPinDetails?.pinCode || '700156',
-      deliveryAddress: currentPinDetails ? `${currentPinDetails.area}, ${currentPinDetails.district}` : 'Default Address',
-      paymentMethod: 'UPI / In-App Direct Pay',
+      deliveryPinCode: currentPinDetails?.pinCode || details.deliveryPinCode || '110001',
+      deliveryAddress: currentPinDetails
+        ? `${currentPinDetails.area}, ${currentPinDetails.district}`
+        : 'Selected Delivery Location',
+      paymentMethod: details.paymentMethod,
     };
 
     setUserProfile((prev) => ({
       ...prev,
+      cart: [],
       pastOrders: [newOrder, ...prev.pastOrders],
-      totalSavingsAmount: prev.totalSavingsAmount + 45,
+      totalSavingsAmount: prev.totalSavingsAmount + 55,
     }));
 
     // Sync order live to Supabase Cloud Database!
     createDirectOrderInCloud({
       orderId: newOrder.id,
-      userId: userProfile.email || 'user-1',
+      userId: userProfile.email || 'guest-user',
       items: newOrder.items,
       totalAmount: newOrder.totalAmount,
       deliveryPinCode: newOrder.deliveryPinCode,
       deliveryAddress: newOrder.deliveryAddress,
       paymentMethod: newOrder.paymentMethod,
     });
+
+    setActiveTrackingOrder(newOrder);
+    setIsTrackingModalOpen(true);
+  };
+
+  const handleTrackOrder = (order: OrderRecord) => {
+    setActiveTrackingOrder(order);
+    setIsTrackingModalOpen(true);
+  };
+
+  const handleViewReceipt = (order: OrderRecord) => {
+    setActiveReceiptOrder(order);
+    setIsReceiptModalOpen(true);
   };
 
   // Auth Operations
   const handleLoginSuccess = async (name: string, email: string, phone: string) => {
-    // 1. Fetch user's own orders from Supabase
     const cloudOrders = await fetchUserOrdersFromCloud(email);
 
-    setUserProfile((prev) => ({
-      ...prev,
-      id: email,
-      name,
-      email,
-      phone,
-      isLoggedIn: true,
-      pastOrders: cloudOrders,
-      cart: [],
-    }));
+    setUserProfile((prev) => {
+      const mergedOrders: OrderRecord[] = [...prev.pastOrders];
+      cloudOrders.forEach((co) => {
+        if (!mergedOrders.some((mo) => mo.id === co.id)) {
+          mergedOrders.push(co as OrderRecord);
+        }
+      });
 
-    // 2. Sync user login live to Supabase Cloud Database
-    syncUserProfileToCloud({
-      id: email,
-      name,
-      email,
-      phone,
-      currentPinCode: currentPinDetails?.pinCode || userProfile.currentPinCode || '',
-      totalSavings: userProfile.totalSavingsAmount,
+      const updated = {
+        ...prev,
+        id: email,
+        name,
+        email,
+        phone,
+        isLoggedIn: true,
+        pastOrders: mergedOrders,
+      };
+
+      syncUserProfileToCloud({
+        id: email,
+        name,
+        email,
+        phone,
+        currentPinCode: prev.currentPinCode || currentPinDetails?.pinCode || '',
+        totalSavings: prev.totalSavingsAmount,
+      });
+
+      return updated;
     });
   };
 
   const handleLogout = () => {
+    setUserProfile({
+      id: '',
+      name: 'Guest User',
+      email: '',
+      phone: '',
+      isLoggedIn: false,
+      currentPinCode: '',
+      savedAddresses: [],
+      preferredLanguage: 'en',
+      totalSavingsAmount: 0,
+      comparedSearchesCount: 0,
+      favoriteProductIds: [],
+      alerts: [],
+      cart: [],
+      pastOrders: [],
+    });
     localStorage.removeItem('pricebite_user_db');
+  };
+
+  const handleSaveAlert = (targetPrice: number) => {
+    if (!alertProduct) return;
+    const newAlert = {
+      id: `alert-${Date.now()}`,
+      productId: alertProduct.id,
+      productName: alertProduct.name,
+      targetPrice,
+      currentLowestPrice: alertProduct.platformResults[0].priceBreakdown.finalPayablePrice,
+      pinCode: currentPinDetails?.pinCode || 'Pan-India',
+      createdAt: new Date().toISOString(),
+      active: true,
+    };
+
     setUserProfile((prev) => ({
       ...prev,
-      isLoggedIn: false,
-      pastOrders: [],
-      cart: [],
+      alerts: [...prev.alerts, newAlert],
     }));
-  };
 
-  const handleOrderRedirect = (platform: PlatformResult, productName: string = 'Item') => {
-    if (platform.isDirectAppOrder || platform.platformId === 'pricebite') {
-      const mockProd = productsForLocation[0];
-      handleAddToCart(mockProd, platform);
-    } else {
-      setRedirectingPlatform({ platform, productName });
-    }
-  };
-
-  const handleExecutePlatformRedirect = (url: string) => {
-    window.open(url, '_blank');
-    setRedirectingPlatform(null);
-  };
-
-  const handleSaveAlert = (productId: string, targetPrice: number) => {
-    const prod = productsForLocation.find((p) => p.id === productId);
-    if (prod) {
-      const lowestPrice = Math.min(...prod.platformResults.map((p) => p.priceBreakdown.finalPayablePrice));
-      const activeUserId = userProfile.email || 'user-1';
-      const pinCode = currentPinDetails?.pinCode || '';
-
-      setUserProfile((prev) => ({
-        ...prev,
-        alerts: [
-          ...prev.alerts,
-          {
-            id: `alt-${Date.now()}`,
-            productId,
-            productName: prod.name,
-            targetPrice,
-            currentLowestPrice: lowestPrice,
-            pinCode,
-            createdAt: 'Today',
-            active: true,
-          },
-        ],
-      }));
-
-      // Sync price drop alert to Supabase cloud database
+    if (userProfile.email) {
       syncPriceAlertToCloud({
-        userId: activeUserId,
-        productId,
-        productName: prod.name,
-        targetPrice,
-        currentLowestPrice: lowestPrice,
-        pinCode,
+        userId: userProfile.email,
+        productId: newAlert.productId,
+        productName: newAlert.productName,
+        targetPrice: newAlert.targetPrice,
+        currentLowestPrice: newAlert.currentLowestPrice,
+        pinCode: newAlert.pinCode,
       });
     }
+
+    setAlertProduct(null);
   };
 
   const handleRemoveAlert = (alertId: string) => {
@@ -438,66 +431,77 @@ export function App() {
     }));
   };
 
+  const handleOrderRedirect = (platform: PlatformResult, productName: string) => {
+    if (platform.isDirectAppOrder) {
+      const found = productsForLocation.find((p) => p.name === productName);
+      if (found) {
+        handleAddToCart(found, platform);
+        return;
+      }
+    }
+    setRedirectingPlatform({ platform, productName });
+  };
+
+  const handleExecutePlatformRedirect = (orderUrl: string) => {
+    window.open(orderUrl, '_blank', 'noopener,noreferrer');
+    setRedirectingPlatform(null);
+  };
+
+  const cartTotalItems = userProfile.cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
-    <div className={`min-h-screen flex flex-col font-sans antialiased selection:bg-orange-500 selection:text-slate-950 transition-colors ${
-      themeMode === 'light' ? 'light-mode bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
-    }`}>
-      {/* Top Navbar with Location, Cart, Theme Switcher & Login state */}
+    <div
+      className={`min-h-screen flex flex-col font-sans transition-colors ${
+        themeMode === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
+      }`}
+    >
+      {/* Universal Top Navigation */}
       <Navbar
         currentLang={currentLang}
         onLanguageChange={setCurrentLang}
         currentPinCode={currentPinDetails?.pinCode || ''}
-        pinArea={currentPinDetails?.area || ''}
+        pinArea={currentPinDetails ? `${currentPinDetails.area}, ${currentPinDetails.district}` : ''}
         onOpenPinModal={() => setIsPinModalOpen(true)}
         activeTab={activeTab}
         onSelectTab={(tab) => setActiveTab(tab as any)}
         onOpenDealBot={() => setIsDealBotOpen(true)}
         onOpenVoiceSearch={() => setIsVoiceSearchOpen(true)}
         totalSavings={userProfile.totalSavingsAmount}
-        cartItemCount={userProfile.cart.reduce((sum, item) => sum + item.quantity, 0)}
+        cartItemCount={cartTotalItems}
         onOpenCart={() => setIsCartOpen(true)}
         themeMode={themeMode}
         onToggleTheme={handleToggleTheme}
         userProfile={userProfile}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenDealsModal={() => setActiveTab('search')}
       />
 
-      {/* Main Body Routing Views */}
+      {/* Main Dynamic View Content */}
       <main className="flex-1">
         {activeTab === 'home' && (
-          <div className="space-y-6">
+          <div className="space-y-12">
             <HeroSearch
               currentLang={currentLang}
+              currentPinCode={currentPinDetails?.pinCode || ''}
+              pinArea={currentPinDetails ? `${currentPinDetails.area}, ${currentPinDetails.district}` : ''}
+              onOpenPinModal={() => setIsPinModalOpen(true)}
               onSearch={handleSearch}
               onOpenVoiceSearch={() => setIsVoiceSearchOpen(true)}
               onSelectCategory={(cat) => handleSearch(cat)}
-              currentPinCode={currentPinDetails?.pinCode || ''}
-              pinArea={currentPinDetails?.area || ''}
-              onOpenPinModal={() => setIsPinModalOpen(true)}
             />
 
             <TrendingDeals
               products={productsForLocation}
               currentLang={currentLang}
-              onSelectProduct={(prod) => {
-                setSearchResults([prod]);
+              onSelectProduct={(product: ProductComparisonItem) => {
+                setSearchResults([product]);
                 setActiveTab('search');
               }}
               themeMode={themeMode}
             />
-
-            {/* FLOATING AUTO-ROTATING RESTAURANT CAROUSEL */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <FloatingRestaurantCarousel
-                restaurants={restaurantsForLocation}
-                currentLang={currentLang}
-                themeMode={themeMode}
-              />
-            </div>
           </div>
         )}
 
-        {/* Dedicated PriceBite Direct Fooding Store (100% Prepared Food In-App) */}
         {activeTab === 'direct' && (
           <PriceBiteDirectHub
             currentPinDetails={currentPinDetails}
@@ -508,7 +512,6 @@ export function App() {
           />
         )}
 
-        {/* Dedicated PriceBite Quick Mart (10-20 Min Grocery & Packaged Frozen Store) */}
         {activeTab === 'quickmart' && (
           <QuickMartHub
             currentPinDetails={currentPinDetails}
@@ -520,13 +523,11 @@ export function App() {
         )}
 
         {activeTab === 'search' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${
-              themeMode === 'light' ? 'border-slate-200' : 'border-slate-800'
-            }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-black">
-                  Price Comparison Hub
+                  {searchQuery ? `Comparison Results for "${searchQuery}"` : 'Pan-India Platform Price Comparison'}
                 </h1>
                 <p className="text-xs text-slate-400 flex items-center space-x-1.5 mt-1">
                   <MapPin className="w-3.5 h-3.5 text-orange-400" />
@@ -559,7 +560,9 @@ export function App() {
                 <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-3">
                   <span className="text-4xl block">🔍</span>
                   <h3 className="text-xl font-bold text-slate-100">No Matching Food Items Found</h3>
-                  <p className="text-xs text-slate-400">Try searching for "Biryani", "Pizza", "Amul Milk", "KFC", "Burger", or "Momos"</p>
+                  <p className="text-xs text-slate-400">
+                    Try searching for "Biryani", "Pizza", "Amul Milk", "KFC", "Burger", or "Momos"
+                  </p>
                 </div>
               ) : (
                 searchResults.map((product) => (
@@ -609,11 +612,13 @@ export function App() {
             onRemoveAlert={handleRemoveAlert}
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
             onLogout={handleLogout}
-            onReorderItem={(item) => {
+            onReorderItem={() => {
               const mockProd = productsForLocation[0];
               const plat = mockProd.platformResults[0];
               handleAddToCart(mockProd, plat);
             }}
+            onTrackOrder={handleTrackOrder}
+            onViewReceipt={handleViewReceipt}
             themeMode={themeMode}
           />
         )}
@@ -639,8 +644,48 @@ export function App() {
         onUpdateQuantity={handleUpdateCartQty}
         onRemoveItem={handleRemoveCartItem}
         onClearCart={handleClearCart}
-        onCheckoutSuccess={handleCheckoutSuccess}
+        onInitiatePayment={handleInitiatePayment}
         currentPinDetails={currentPinDetails}
+        themeMode={themeMode}
+      />
+
+      {/* UPI Payment Gateway Modal */}
+      <UPIPaymentModal
+        isOpen={isUPIModalOpen}
+        onClose={() => setIsUPIModalOpen(false)}
+        totalAmount={pendingCheckoutTotal}
+        items={pendingCheckoutItems}
+        currentPinDetails={currentPinDetails}
+        onPaymentSuccess={handlePaymentSuccess}
+        themeMode={themeMode}
+      />
+
+      {/* Real-time Order Tracking Modal */}
+      <OrderTrackingModal
+        isOpen={isTrackingModalOpen}
+        onClose={() => setIsTrackingModalOpen(false)}
+        order={activeTrackingOrder}
+        currentPinDetails={currentPinDetails}
+        onViewReceipt={(order) => {
+          setIsTrackingModalOpen(false);
+          handleViewReceipt(order);
+        }}
+        themeMode={themeMode}
+      />
+
+      {/* Official Digital Tax Invoice / Receipt Modal */}
+      <OrderReceiptModal
+        isOpen={isReceiptModalOpen}
+        onClose={() => setIsReceiptModalOpen(false)}
+        order={activeReceiptOrder}
+        currentPinDetails={currentPinDetails}
+        onReorder={(items) => {
+          if (items.length > 0) {
+            const mockProd = productsForLocation[0];
+            const plat = mockProd.platformResults[0];
+            handleAddToCart(mockProd, plat);
+          }
+        }}
         themeMode={themeMode}
       />
 
@@ -688,7 +733,7 @@ export function App() {
         isOpen={!!alertProduct}
         onClose={() => setAlertProduct(null)}
         product={alertProduct}
-        onSaveAlert={handleSaveAlert}
+        onSaveAlert={(_prodId, targetPrice) => handleSaveAlert(targetPrice)}
       />
 
       <DealBotWidget
@@ -711,9 +756,13 @@ export function App() {
       {/* Direct App Order Redirect Modal */}
       {redirectingPlatform && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fade-in">
-          <div className={`border rounded-3xl p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative ${
-            themeMode === 'light' ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-slate-100'
-          }`}>
+          <div
+            className={`border rounded-3xl p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative ${
+              themeMode === 'light'
+                ? 'bg-white border-slate-200 text-slate-900'
+                : 'bg-slate-900 border-slate-800 text-slate-100'
+            }`}
+          >
             <div className="w-16 h-16 rounded-full bg-orange-500/20 text-orange-400 mx-auto flex items-center justify-center text-3xl shadow-lg border border-orange-500/40">
               {redirectingPlatform.platform.platformLogo}
             </div>
@@ -727,15 +776,21 @@ export function App() {
               </p>
             </div>
 
-            <div className={`p-4 rounded-2xl border text-left text-xs space-y-2 ${
-              themeMode === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
+            <div
+              className={`p-4 rounded-2xl border text-left text-xs space-y-2 ${
+                themeMode === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
+              }`}
+            >
               <div className="flex items-center space-x-2 text-emerald-500 font-bold">
                 <CheckCircle className="w-4 h-4" />
                 <span>Verified Direct Deep Link Active</span>
               </div>
               <p className="text-slate-400">
-                PriceBite is opening the official dish page on {redirectingPlatform.platform.platformName}{currentPinDetails ? ` for delivery to 📍 ${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})` : ''}.
+                PriceBite is opening the official dish page on {redirectingPlatform.platform.platformName}
+                {currentPinDetails
+                  ? ` for delivery to 📍 ${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
+                  : ''}
+                .
               </p>
             </div>
 

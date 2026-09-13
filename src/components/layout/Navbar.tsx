@@ -3,6 +3,7 @@ import { MapPin, Globe, Bot, User, Sun, Moon, ShoppingCart, LogIn, Store, Shield
 import { LanguageCode, ThemeMode, UserProfile } from '../../types';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages';
 import { getTranslation } from '../../i18n';
+import { LiveSavingsBadge } from '../common/LiveSavingsBadge';
 
 interface NavbarProps {
   currentLang: LanguageCode;
@@ -21,6 +22,7 @@ interface NavbarProps {
   onToggleTheme: () => void;
   userProfile: UserProfile;
   onOpenAuthModal: () => void;
+  onOpenDealsModal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -40,6 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
   userProfile,
   onOpenAuthModal,
+  onOpenDealsModal,
 }) => {
   const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === currentLang) || SUPPORTED_LANGUAGES[0];
 
@@ -47,27 +50,31 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isDark = themeMode === 'dark';
 
   return (
-    <header className={`sticky top-0 z-40 backdrop-blur-md border-b text-slate-100 transition-colors ${
-      isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white/95 border-slate-200 text-slate-900 shadow-md'
-    }`}>
+    <header
+      className={`sticky top-0 z-40 backdrop-blur-xl border-b text-slate-100 transition-colors ${
+        isDark ? 'bg-slate-900/85 border-slate-800/90' : 'bg-white/90 border-slate-200 text-slate-900 shadow-md'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* FIRST (TOP) ROW — Responsive Layout */}
         <div className="flex items-center justify-between h-16 gap-2">
           {/* Brand Logo */}
           <div className="flex items-center space-x-3 cursor-pointer flex-shrink-0" onClick={() => onSelectTab('home')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-red-600 flex items-center justify-center font-extrabold text-xl shadow-lg shadow-orange-500/30 ring-2 ring-orange-400/40">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-red-600 flex items-center justify-center font-extrabold text-xl shadow-lg shadow-orange-500/30 ring-2 ring-orange-400/40">
               ⚡
             </div>
             <div>
               <div className="flex items-center space-x-1">
-                <span className={`text-xl sm:text-2xl font-black tracking-tight ${
-                  isDark
-                    ? 'bg-gradient-to-r from-amber-400 via-orange-300 to-amber-200 bg-clip-text text-transparent'
-                    : 'bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 bg-clip-text text-transparent'
-                }`}>
+                <span
+                  className={`text-xl sm:text-2xl font-black tracking-tight ${
+                    isDark
+                      ? 'bg-gradient-to-r from-amber-400 via-orange-300 to-amber-200 bg-clip-text text-transparent'
+                      : 'bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 bg-clip-text text-transparent'
+                  }`}
+                >
                   PriceBite
                 </span>
-                <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-500 border border-orange-500/30 tracking-wider">
+                <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 tracking-wider">
                   India
                 </span>
               </div>
@@ -77,29 +84,41 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* User Location / PIN Code Pill */}
-          <button
-            onClick={onOpenPinModal}
-            className={`flex items-center space-x-2 px-3 py-1.5 rounded-full border transition-all text-xs flex-shrink-0 whitespace-nowrap group ${
-              hasPin
-                ? isDark
-                  ? 'bg-slate-800/90 hover:bg-slate-800 text-slate-200 border-slate-700/80'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
-                : 'bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-500/60 text-orange-400 animate-pulse'
-            }`}
-          >
-            <MapPin className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform flex-shrink-0" />
-            <div className="text-left">
-              <span className={`text-[10px] block font-semibold leading-none uppercase ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                {getTranslation('location', currentLang)}
-              </span>
-              <span className="font-bold text-orange-500 truncate max-w-[100px] sm:max-w-[140px] block leading-tight">
-                {hasPin ? `📍 ${currentPinCode} (${pinArea})` : '📍 Enter PIN'}
-              </span>
-            </div>
-          </button>
+          {/* Center Location & Live Savings Ticker */}
+          <div className="flex items-center space-x-2">
+            {/* User Location / PIN Code Pill */}
+            <button
+              onClick={onOpenPinModal}
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-full border transition-all text-xs flex-shrink-0 whitespace-nowrap group ${
+                hasPin
+                  ? isDark
+                    ? 'bg-slate-800/90 hover:bg-slate-800 text-slate-200 border-slate-700/80'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+                  : 'bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-500/60 text-orange-400 animate-pulse'
+              }`}
+            >
+              <MapPin className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform flex-shrink-0" />
+              <div className="text-left">
+                <span
+                  className={`text-[10px] block font-semibold leading-none uppercase ${
+                    isDark ? 'text-slate-400' : 'text-slate-500'
+                  }`}
+                >
+                  {getTranslation('location', currentLang)}
+                </span>
+                <span className="font-bold text-orange-500 truncate max-w-[100px] sm:max-w-[140px] block leading-tight">
+                  {hasPin ? `📍 ${currentPinCode} (${pinArea})` : '📍 Enter PIN'}
+                </span>
+              </div>
+            </button>
 
-          {/* Right Action Bar (TOP ROW: Theme, Cart, Quick Mart, DealBot, Language, Profile) */}
+            {/* Live Community Savings Ticker */}
+            <div className="hidden sm:block">
+              <LiveSavingsBadge themeMode={themeMode} onOpenDealsModal={onOpenDealsModal} />
+            </div>
+          </div>
+
+          {/* Right Action Bar */}
           <div className="flex items-center space-x-2 sm:space-x-2.5 overflow-x-auto scrollbar-none py-1 flex-shrink-0">
             {/* ☀️/🌙 Theme Switcher Toggle */}
             <button
@@ -128,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* 🛍️ Quick Mart (10-20m) Button — FIXED NO OVERFLOW / WRAPPING */}
+            {/* 🛍️ Quick Mart (10-20m) Button */}
             <button
               onClick={() => onSelectTab('quickmart')}
               className={`flex items-center space-x-1.5 border px-3 py-1.5 rounded-full text-xs font-black transition-all hover:scale-105 flex-shrink-0 whitespace-nowrap ${
@@ -150,13 +169,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden md:inline">DealBot AI</span>
             </button>
 
-            {/* Language Selector (100% Reliable Native Select Control) */}
+            {/* Language Selector */}
             <div className="relative flex-shrink-0 flex items-center">
-              <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all relative ${
-                isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-300 text-slate-800'
-              }`}>
+              <div
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all relative ${
+                  isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-300 text-slate-800'
+                }`}
+              >
                 <Globe className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                <span className="pointer-events-none">{currentLangObj.flag} {currentLangObj.nativeName}</span>
+                <span className="pointer-events-none">
+                  {currentLangObj.flag} {currentLangObj.nativeName}
+                </span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none ml-1" />
 
                 <select
@@ -181,7 +204,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full border font-bold text-xs transition-colors flex-shrink-0 whitespace-nowrap ${
                   activeTab === 'profile'
                     ? 'bg-orange-500/20 border-orange-500 text-orange-400'
-                    : isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-100 border-slate-300 text-slate-800'
+                    : isDark
+                    ? 'bg-slate-800 border-slate-700 text-slate-200'
+                    : 'bg-slate-100 border-slate-300 text-slate-800'
                 }`}
               >
                 <User className="w-4 h-4 text-orange-400 flex-shrink-0" />
@@ -200,9 +225,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* SECOND (BOTTOM) ROW: Secondary Navigation Tabs */}
-        <div className={`flex items-center space-x-1 sm:space-x-4 overflow-x-auto py-2 border-t text-xs scrollbar-none ${
-          isDark ? 'border-slate-800/80' : 'border-slate-200'
-        }`}>
+        <div
+          className={`flex items-center space-x-1 sm:space-x-4 overflow-x-auto py-2 border-t text-xs scrollbar-none ${
+            isDark ? 'border-slate-800/80' : 'border-slate-200'
+          }`}
+        >
           {[
             { id: 'home', key: 'navHome', fallback: 'Home Search 🔍' },
             { id: 'direct', key: 'navDirect', fallback: 'PriceBite Direct (Order Food In-App) ⚡' },
@@ -219,10 +246,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 shadow-md shadow-orange-500/20'
                   : tab.id === 'admin'
-                    ? 'text-cyan-400 hover:text-cyan-300 bg-cyan-950/40 border border-cyan-500/30 hover:border-cyan-400'
-                    : isDark
-                      ? 'text-slate-300 hover:text-white hover:bg-slate-800'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'text-cyan-400 hover:text-cyan-300 bg-cyan-950/40 border border-cyan-500/30 hover:border-cyan-400'
+                  : isDark
+                  ? 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               {getTranslation(tab.key, currentLang) !== tab.key ? getTranslation(tab.key, currentLang) : tab.fallback}
