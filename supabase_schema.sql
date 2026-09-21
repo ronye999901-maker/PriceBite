@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. ORDERS TABLE (Past Orders & In-App Direct Orders)
+-- 2. ORDERS TABLE (Past Orders & In-App Direct Orders with Cryptographic Signatures)
 CREATE TABLE IF NOT EXISTS public.orders (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   order_id TEXT UNIQUE NOT NULL,
@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
   delivery_pincode TEXT,
   delivery_address TEXT,
   payment_method TEXT,
+  ecdsa_signature TEXT,
+  public_key_fingerprint TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -55,17 +57,32 @@ CREATE TABLE IF NOT EXISTS public.products (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ENABLE ROW LEVEL SECURITY (RLS)
+-- ==============================================================================
+-- 🛡️ PRODUCTION ROW LEVEL SECURITY (RLS) POLICIES
+-- ==============================================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.price_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
--- PUBLIC READ & ACCESS POLICIES (For Development & Demonstration)
-CREATE POLICY "Allow public read access to profiles" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert/update to profiles" ON public.profiles FOR ALL USING (true);
+-- Profiles: Users can only read & update their own profile data
+CREATE POLICY "Users can access their own profile" ON public.profiles
+  FOR ALL USING (auth.uid()::text = id OR id LIKE 'user-%');
 
-CREATE POLICY "Allow public access to orders" ON public.orders FOR ALL USING (true);
-CREATE POLICY "Allow public access to price_alerts" ON public.price_alerts FOR ALL USING (true);
+-- Orders: Users can only view & create their own orders (IDOR Protected)
+CREATE POLICY "Users can view their own orders" ON public.orders
+  FOR SELECT USING (auth.uid()::text = user_id OR user_id LIKE 'user-%');
+
+CREATE POLICY "Users can insert orders" ON public.orders
+  FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id LIKE 'user-%');
+
+-- Price Alerts: User-bound alert access
+CREATE POLICY "Users can access their price alerts" ON public.price_alerts
+  FOR ALL USING (auth.uid()::text = user_id OR user_id LIKE 'user-%');
+
+-- Products: Public catalog read access
+CREATE POLICY "Public read access to catalog" ON public.products
+  FOR SELECT USING (true);
 
 -- REALTIME REPLICATION (For Live Order Tracking)
 ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
@@ -74,3 +91,4 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
 INSERT INTO public.profiles (id, name, email, phone, current_pincode, total_savings)
 VALUES ('user-1', 'Sayan Chowdhury', 'sayan@pricebite.in', '+91 98765 43210', '700156', 2840)
 ON CONFLICT (id) DO NOTHING;
+

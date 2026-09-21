@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UserProfile as UserProfileType, LanguageCode, ThemeMode, OrderRecord } from '../../types';
-import { User, Mail, Phone, MapPin, Globe, TrendingDown, Bell, LogOut, CheckCircle2, ShoppingBag, Clock, RotateCcw, Navigation, FileText } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Globe, TrendingDown, Bell, LogOut, CheckCircle2, ShoppingBag, Clock, RotateCcw, Navigation, FileText, ShieldCheck } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages';
 import { getTranslation } from '../../i18n';
+import { SecurityHubModal } from './SecurityHubModal';
 
 interface UserProfileProps {
   profile: UserProfileType;
@@ -31,6 +32,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   onViewReceipt,
   themeMode,
 }) => {
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const isDark = themeMode === 'dark';
 
   return (
@@ -74,7 +76,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setIsSecurityModalOpen(true)}
+            className="bg-emerald-500/15 border border-emerald-500/30 hover:bg-emerald-500/25 text-emerald-300 font-black px-4 py-2 rounded-xl text-xs transition-all flex items-center space-x-1.5 shadow-sm shadow-emerald-500/10"
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Security & Privacy Hub 🛡️</span>
+          </button>
+
           {profile.isLoggedIn ? (
             <button
               onClick={onLogout}
@@ -93,6 +103,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           )}
         </div>
       </div>
+
+      {/* Security Hub Modal */}
+      <SecurityHubModal
+        isOpen={isSecurityModalOpen}
+        onClose={() => setIsSecurityModalOpen(false)}
+        userProfile={profile}
+        themeMode={themeMode}
+      />
 
       {/* Analytics Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

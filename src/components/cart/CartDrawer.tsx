@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, ShoppingBag, Trash2, ArrowRight, CheckCircle2, ShieldCheck, MapPin, Zap } from 'lucide-react';
-import { CartItem, PINCodeDetails, ThemeMode } from '../../types';
+import { X, ShoppingBag, Trash2, ArrowRight, CheckCircle2, ShieldCheck, MapPin, Zap, Lock, KeyRound } from 'lucide-react';
+import { CartItem, PINCodeDetails, ThemeMode, CryptographicProof } from '../../types';
+import { signOrderPayload } from '../../engine/crypto/securityEngine';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -28,6 +29,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   themeMode,
 }) => {
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+  const [cryptoProof, setCryptoProof] = useState<CryptographicProof | null>(null);
+  const [showCryptoDetails, setShowCryptoDetails] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,14 +38,30 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const isDark = themeMode === 'dark';
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const deliveryFee = cartItems.length > 0 ? 15 : 0;
   const discount = cartItems.length > 0 ? 25 : 0;
   const grandTotal = Math.max(0, subtotal + deliveryFee - discount);
+
+  // Compute ECDSA signature in real-time
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const summary = cartItems.map((i) => `${i.productName}x${i.quantity}@₹${i.price}`).join(',');
+      signOrderPayload({
+        totalAmount: grandTotal,
+        itemsSummary: summary,
+        pinCode: currentPinDetails?.pinCode || '700156',
+      }).then((proof) => {
+        setCryptoProof(proof);
+      }).catch((err) => {
+        console.warn('Crypto signing background notice:', err);
+      });
+    } else {
+      setCryptoProof(null);
+    }
+  }, [cartItems, grandTotal, currentPinDetails]);
 
   const locText = currentPinDetails
     ? `${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
@@ -58,6 +77,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       setIsOrderCompleted(true);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden animate-fade-in">
@@ -186,6 +207,39 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <MapPin className="w-4 h-4" />
                 <span className="truncate">Delivery: {locText}</span>
               </div>
+
+              {/* Cryptographic Protection Badge */}
+              {cryptoProof && (
+                <div
+                  onClick={() => setShowCryptoDetails(!showCryptoDetails)}
+                  className="cursor-pointer p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-between text-[11px] transition-all hover:bg-emerald-500/15"
+                >
+                  <div className="flex items-center space-x-2 text-emerald-400 font-bold">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>ECDSA-256 Tamper-Proof Seal</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-500/40">
+                    {cryptoProof.publicKeyFingerprint}
+                  </span>
+                </div>
+              )}
+
+              {showCryptoDetails && cryptoProof && (
+                <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] font-mono space-y-1 text-slate-300 animate-fade-in">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Cipher:</span>
+                    <span className="text-amber-400">{cryptoProof.algorithm}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Payload Hash:</span>
+                    <span className="text-slate-200 truncate max-w-[180px]">{cryptoProof.payloadHash}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Signature:</span>
+                    <span className="text-emerald-400 truncate max-w-[180px]">{cryptoProof.signatureHex.slice(0, 24)}...</span>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between text-slate-400">

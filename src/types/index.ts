@@ -206,3 +206,33 @@ export interface DealBotMessage {
   quickActions?: string[];
   recommendedProduct?: ProductComparisonItem;
 }
+
+export interface CryptographicProof {
+  algorithm: string;
+  signatureHex: string;
+  publicKeyFingerprint: string;
+  timestamp: number;
+  nonce: string;
+  payloadHash: string;
+  isValid: boolean;
+}
+
+export interface SecurityAuditEvent {
+  id: string;
+  timestamp: number;
+  type: 'KEY_GEN' | 'ORDER_SIGN' | 'SIG_VERIFY' | 'ENCRYPT_PII' | 'FILE_HASH' | 'KEY_ROTATE' | 'DATA_PURGE';
+  description: string;
+  status: 'SUCCESS' | 'WARNING' | 'FAILED';
+  meta?: Record<string, any>;
+}
+
+export interface SecurityStatus {
+  healthScore: number;
+  isTwoFactorEnabled: boolean;
+  isBiometricsEnabled: boolean;
+  publicKeyFingerprint: string;
+  lastRotatedAt: number;
+  activeSessionId: string;
+  eventsCount: number;
+}
+

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, ShieldCheck, CheckCircle2, Lock, ArrowRight, Smartphone, RefreshCw, AlertCircle } from 'lucide-react';
-import { CartItem, PINCodeDetails, ThemeMode } from '../../types';
+import { X, QrCode, ShieldCheck, CheckCircle2, Lock, ArrowRight, Smartphone, RefreshCw, AlertCircle, KeyRound, FileCheck2 } from 'lucide-react';
+import { CartItem, PINCodeDetails, ThemeMode, CryptographicProof } from '../../types';
+import { signOrderPayload, verifyOrderSignature, encryptSensitivePII } from '../../engine/crypto/securityEngine';
 
 interface UPIPaymentModalProps {
   isOpen: boolean;
@@ -35,6 +36,10 @@ export const UPIPaymentModal: React.FC<UPIPaymentModalProps> = ({
   const [paymentStep, setPaymentStep] = useState<'select' | 'enter_pin' | 'processing' | 'success'>('select');
   const [qrTimer, setQrTimer] = useState(180);
   const [txnId, setTxnId] = useState('');
+  const [cryptoProof, setCryptoProof] = useState<CryptographicProof | null>(null);
+  const [isSignatureVerified, setIsSignatureVerified] = useState<boolean>(true);
+  const [showSecurityProof, setShowSecurityProof] = useState<boolean>(false);
+  const [encryptedAddressBadge, setEncryptedAddressBadge] = useState<string>('');
 
   const isDark = themeMode === 'dark';
 
@@ -43,9 +48,42 @@ export const UPIPaymentModal: React.FC<UPIPaymentModalProps> = ({
       setPaymentStep('select');
       setEnteredPin('');
       setQrTimer(180);
-      setTxnId(`UPI-PB-${Math.floor(100000 + Math.random() * 900000)}`);
+      const generatedTxn = `UPI-PB-${Math.floor(100000 + Math.random() * 900000)}`;
+      setTxnId(generatedTxn);
+
+      // Perform real-time cryptographic signing and encryption
+      const summary = items.map((i) => `${i.productName}x${i.quantity}@₹${i.price}`).join(',');
+      signOrderPayload({
+        orderId: generatedTxn,
+        totalAmount,
+        itemsSummary: summary,
+        pinCode: currentPinDetails?.pinCode || '700156',
+      }).then(async (proof) => {
+        setCryptoProof(proof);
+        const verified = await verifyOrderSignature(
+          {
+            orderId: generatedTxn,
+            totalAmount,
+            itemsSummary: summary,
+            pinCode: currentPinDetails?.pinCode || '700156',
+            timestamp: proof.timestamp,
+            nonce: proof.nonce,
+          },
+          proof.signatureHex
+        );
+        setIsSignatureVerified(verified);
+      }).catch((e) => console.warn('Payment crypto notice:', e));
+
+      // Encrypt delivery address with AES-256-GCM
+      if (currentPinDetails) {
+        encryptSensitivePII(`${currentPinDetails.area}, ${currentPinDetails.district} - ${currentPinDetails.pinCode}`)
+          .then((enc) => {
+            setEncryptedAddressBadge(`AES-256:${enc.ciphertext.slice(0, 12)}...`);
+          })
+          .catch(() => {});
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, totalAmount, items, currentPinDetails]);
 
   // QR Code countdown
   useEffect(() => {
@@ -152,6 +190,52 @@ export const UPIPaymentModal: React.FC<UPIPaymentModalProps> = ({
               {currentPinDetails ? `${currentPinDetails.area} (${currentPinDetails.pinCode})` : 'Selected Address'}
             </div>
           </div>
+        </div>
+
+        {/* Cryptographic Protection & Anti-Tamper Bar */}
+        <div className={`px-6 py-2 border-b flex flex-col gap-1.5 ${isDark ? 'bg-slate-900/40 border-slate-800/60' : 'bg-slate-50 border-slate-200'}`}>
+          <div className="flex items-center justify-between text-[11px]">
+            <div className="flex items-center space-x-1.5">
+              <span className={`w-2 h-2 rounded-full ${isSignatureVerified ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
+              <span className="font-bold text-slate-300">
+                {isSignatureVerified ? 'ECDSA-256 Anti-Tamper Verified' : 'Signature Mismatch!'}
+              </span>
+            </div>
+            <button
+              onClick={() => setShowSecurityProof(!showSecurityProof)}
+              className="text-[10px] text-orange-400 hover:text-orange-300 font-bold underline flex items-center space-x-1"
+            >
+              <KeyRound className="w-3 h-3" />
+              <span>{showSecurityProof ? 'Hide Proof' : 'Inspect Security Proof'}</span>
+            </button>
+          </div>
+
+          {showSecurityProof && cryptoProof && (
+            <div className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 text-[10px] font-mono space-y-1.5 text-slate-300 animate-fade-in">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Signer Algorithm:</span>
+                <span className="text-amber-400 font-bold">{cryptoProof.algorithm}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Device Fingerprint:</span>
+                <span className="text-emerald-400">{cryptoProof.publicKeyFingerprint}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Payload Hash (SHA-256):</span>
+                <span className="text-slate-300 truncate max-w-[220px]">{cryptoProof.payloadHash}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Digital Signature (Hex):</span>
+                <span className="text-emerald-300 truncate max-w-[220px]">{cryptoProof.signatureHex}</span>
+              </div>
+              {encryptedAddressBadge && (
+                <div className="flex justify-between pt-1 border-t border-slate-800">
+                  <span className="text-slate-500">E2E Encrypted Address:</span>
+                  <span className="text-cyan-400">{encryptedAddressBadge}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Step 1: Select Method */}
