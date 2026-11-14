@@ -3,6 +3,7 @@ import { Bot, X, Send, Sparkles, Mic, CheckCircle } from 'lucide-react';
 import { DealBotMessage, ProductComparisonItem, LanguageCode, PlatformResult } from '../../types';
 import { getProductsForLocation } from '../../mock/foodData';
 import { getTranslation } from '../../i18n';
+import { evaluateProductMatch } from '../../engine/matchingEngine';
 
 interface DealBotWidgetProps {
   isOpen: boolean;
@@ -46,14 +47,19 @@ export const DealBotWidget: React.FC<DealBotWidgetProps> = ({
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputText('');
 
-    // AI Intelligence Response Simulation
+    // Hybrid Semantic Matching Engine search
     setTimeout(() => {
-      let matchedProd = mockProducts[0];
-      if (q.toLowerCase().includes('pizza') && mockProducts.length > 1) matchedProd = mockProducts[1];
+      const scoredProducts = mockProducts.map((p) => {
+        const match = evaluateProductMatch(q, p.name, p.restaurantOrBrand, p.quantity, p.category, p.description);
+        return { product: p, match };
+      });
+      scoredProducts.sort((a, b) => b.match.matchScore - a.match.matchScore);
+      const bestCandidate = scoredProducts[0];
+      const matchedProd = bestCandidate && bestCandidate.match.matchScore > 20 ? bestCandidate.product : mockProducts[0];
 
       const cheapestPlat = matchedProd.platformResults.find((p: PlatformResult) => p.platformId === matchedProd.cheapestPlatformId) || matchedProd.platformResults[0];
 
-      let botResponseText = `I evaluated 4 live platform adapters! For "${q}", your cheapest option right now is ${matchedProd.name} on ${cheapestPlat.platformName} for ₹${cheapestPlat.priceBreakdown.finalPayablePrice}. You save ₹${cheapestPlat.priceBreakdown.savingsVsNextCheapest || 15}!`;
+      let botResponseText = `I evaluated 4 live platform adapters using the Hybrid Matching Engine! For "${q}", your cheapest option right now is ${matchedProd.name} on ${cheapestPlat.platformName} for ₹${cheapestPlat.priceBreakdown.finalPayablePrice}. You save ₹${cheapestPlat.priceBreakdown.savingsVsNextCheapest || 15}!`;
 
       if (currentLang === 'bn') {
         botResponseText = `আমি ৪টি লাইভ প্ল্যাটফর্ম চেক করেছি! "${q}"-এর জন্য আপনার সবচেয়ে সস্তা ডিল হল ${cheapestPlat.platformName}-এ ${matchedProd.name} মাত্র ₹${cheapestPlat.priceBreakdown.finalPayablePrice}-এ!`;

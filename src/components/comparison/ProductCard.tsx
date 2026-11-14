@@ -3,9 +3,10 @@ import { ProductComparisonItem, PlatformResult, LanguageCode } from '../../types
 import { ProductMatchBadge } from './ProductMatchBadge';
 import { SmartRecommendationTabs } from './SmartRecommendationTabs';
 import { PlatformPriceTable } from './PlatformPriceTable';
-import { computeRecommendations } from '../../engine/recommendationEngine';
+import { computeRecommendations, runTOPSISAnalysis, DecisionPersona } from '../../engine/recommendationEngine';
+import { TOPSISProofModal } from './TOPSISProofModal';
 import { getTranslation } from '../../i18n';
-import { ExternalLink, ShoppingBag, ShieldCheck, Zap, Sparkles, TrendingDown, Clock, ChevronRight } from 'lucide-react';
+import { ExternalLink, ShoppingBag, ShieldCheck, Zap, Sparkles, TrendingDown, Clock, ChevronRight, Award } from 'lucide-react';
 
 interface ProductCardProps {
   product: ProductComparisonItem;
@@ -25,12 +26,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onOpenPriceAlert,
 }) => {
   const [activeRecommendationTab, setActiveRecommendationTab] = useState('smartPick');
+  const [activePersona, setActivePersona] = useState<DecisionPersona>('balanced');
+  const [isProofModalOpen, setIsProofModalOpen] = useState(false);
 
-  // Compute recommendation winners
-  const recommendations = computeRecommendations(product.platformResults);
+  // Compute multi-criteria TOPSIS analysis
+  const topsisResult = runTOPSISAnalysis(product.platformResults, activePersona);
+  const recommendations = computeRecommendations(product.platformResults, activePersona);
+  const smartPickResult =
+    product.platformResults.find((p) => p.platformId === topsisResult.smartPickId) ||
+    product.platformResults[0];
 
   // Find cheapest, fastest, and PriceBite direct results
-  const cheapestResult = product.platformResults.find((p) => p.platformId === product.cheapestPlatformId) || product.platformResults[0];
+  const cheapestResult =
+    product.platformResults.find((p) => p.platformId === product.cheapestPlatformId) ||
+    product.platformResults[0];
   const pricebiteResult = product.platformResults.find((p) => p.platformId === 'pricebite');
   const swiggyResult = product.platformResults.find((p) => p.platformId === 'swiggy');
   const zomatoResult = product.platformResults.find((p) => p.platformId === 'zomato');
@@ -47,7 +56,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Top Banner & Match Badge */}
       <div className="bg-slate-950/80 px-6 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center space-x-3">
-          <ProductMatchBadge matchType={product.matchType} matchScore={product.matchScore} matchNotes={product.matchNotes} />
+          <ProductMatchBadge
+            matchType={product.matchType}
+            matchScore={product.matchScore}
+            matchNotes={product.matchNotes}
+            semanticSimilarity={product.semanticSimilarity}
+            lexicalSimilarity={product.lexicalSimilarity}
+            portionCongruence={product.portionCongruence}
+            detectedSynonyms={product.detectedSynonyms}
+          />
         </div>
 
         <div className="flex items-center space-x-2">
@@ -62,6 +79,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             className="text-xs text-cyan-400 hover:text-cyan-300 font-bold bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-full transition-all flex items-center space-x-1"
           >
             <span>🔔 Price Alert</span>
+          </button>
+          <button
+            onClick={() => setIsProofModalOpen(true)}
+            className="text-xs text-violet-400 hover:text-violet-300 font-bold bg-violet-500/10 border border-violet-500/30 px-3 py-1 rounded-full transition-all flex items-center space-x-1"
+            title="View Multi-Criteria TOPSIS Mathematical Proof"
+          >
+            <span>📐 TOPSIS ({topsisResult.rankedEvaluations[0]?.topsisScorePercent || 90}%)</span>
           </button>
         </div>
       </div>
@@ -99,41 +123,69 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <div className="flex items-center space-x-3 text-xs text-slate-300 font-bold pt-1">
                 <span>Portion: {product.quantity}</span>
               </div>
+
+              {/* Persona Selector Chips */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-2 text-[10px]">
+                <span className="text-slate-400 font-bold mr-0.5">MCDM Persona:</span>
+                {[
+                  { id: 'balanced', label: '🏆 Balanced' },
+                  { id: 'budget', label: '🎓 Budget First' },
+                  { id: 'speed', label: '⚡ Fast ETA' },
+                  { id: 'quality', label: '⭐ Top Quality' },
+                  { id: 'rewards', label: '🎁 Max Cashback' },
+                ].map((persona) => (
+                  <button
+                    key={persona.id}
+                    onClick={() => setActivePersona(persona.id as DecisionPersona)}
+                    className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
+                      activePersona === persona.id
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                        : 'bg-slate-950 text-slate-400 border border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    {persona.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Right: Best Recommendation Box */}
-          <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-orange-500/30 rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-3 min-w-[260px] shadow-xl">
+          <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-amber-500/40 rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-3 min-w-[270px] shadow-xl">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-extrabold text-orange-400 flex items-center space-x-1">
+              <span className="font-extrabold text-amber-400 flex items-center space-x-1">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>{getTranslation('cheapestOption', currentLang)}</span>
+                <span>Smart Pick ({activePersona.toUpperCase()})</span>
               </span>
-              <span className="bg-emerald-500/20 text-emerald-400 font-bold text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30">
-                SAVE ₹{cheapestResult.priceBreakdown.savingsVsHighest || 45}
-              </span>
+              <button
+                onClick={() => setIsProofModalOpen(true)}
+                className="bg-amber-500/20 text-amber-400 font-black text-[10px] px-2 py-0.5 rounded-full border border-amber-500/30 hover:bg-amber-500/30 font-mono"
+                title="Open mathematical TOPSIS Euclidean proof"
+              >
+                TOPSIS {topsisResult.rankedEvaluations[0]?.topsisScorePercent || 92}%
+              </button>
             </div>
 
             <div>
               <div className="flex items-baseline space-x-2">
                 <span className="text-3xl font-black text-slate-100">
-                  ₹{cheapestResult.priceBreakdown.finalPayablePrice}
+                  ₹{smartPickResult.priceBreakdown.finalPayablePrice}
                 </span>
                 <span className="text-xs text-slate-400 font-bold">Payable</span>
               </div>
               <p className="text-xs text-emerald-400 font-semibold mt-0.5">
-                Effective Cost: ₹{cheapestResult.priceBreakdown.effectiveCost} (incl. Cashback)
+                Effective Cost: ₹{smartPickResult.priceBreakdown.effectiveCost} (incl. Cashback)
               </p>
             </div>
 
             <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
               <span className="font-bold text-slate-300 flex items-center space-x-1.5">
-                <span>{cheapestResult.platformLogo}</span>
-                <span>{cheapestResult.platformName}</span>
+                <span>{smartPickResult.platformLogo}</span>
+                <span>{smartPickResult.platformName}</span>
               </span>
               <span className="text-[11px] text-slate-400 font-semibold flex items-center space-x-1">
                 <Clock className="w-3 h-3 text-orange-400" />
-                <span>{cheapestResult.deliveryTimeMinutes}m</span>
+                <span>{smartPickResult.deliveryTimeMinutes}m</span>
               </span>
             </div>
           </div>
@@ -256,6 +308,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           currentLang={currentLang}
           onOpenBreakdown={onOpenBreakdown}
           onRedirectOrder={onRedirectOrder}
+        />
+
+        {/* Multi-Criteria TOPSIS Mathematical Proof Modal */}
+        <TOPSISProofModal
+          isOpen={isProofModalOpen}
+          onClose={() => setIsProofModalOpen(false)}
+          productName={product.name}
+          topsisResult={topsisResult}
+          onSelectPersona={(p) => setActivePersona(p)}
         />
       </div>
     </div>

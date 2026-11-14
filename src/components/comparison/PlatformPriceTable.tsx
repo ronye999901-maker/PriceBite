@@ -76,9 +76,32 @@ export const PlatformPriceTable: React.FC<PlatformPriceTableProps> = ({
                             </span>
                           )}
                         </div>
-                        <span className="text-[10px] text-slate-400 block">
-                          {isPriceBite ? 'In-App 1-Click Order' : 'App Redirection'}
-                        </span>
+                        <div className="flex items-center space-x-2 mt-0.5">
+                          <span className="text-[10px] text-slate-400">
+                            {isPriceBite ? 'In-App 1-Click Order' : 'App Redirection'}
+                          </span>
+                          {result.ingestionMeta && (
+                            <span
+                              className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold flex items-center space-x-1 ${
+                                result.ingestionMeta.source === 'LIVE_NETWORK'
+                                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                                  : result.ingestionMeta.source === 'L1_CACHE'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                  : 'bg-slate-800 text-slate-400 border border-slate-700'
+                              }`}
+                              title={`Ingestion Latency: ${result.ingestionMeta.latencyMs}ms • Circuit: ${result.ingestionMeta.circuitState || 'CLOSED'}`}
+                            >
+                              <span>
+                                {result.ingestionMeta.source === 'LIVE_NETWORK'
+                                  ? '🟢 Live'
+                                  : result.ingestionMeta.source === 'L1_CACHE'
+                                  ? '⚡ L1 RAM'
+                                  : '💾 L2 Cache'}
+                              </span>
+                              <span>• {result.ingestionMeta.latencyMs}ms</span>
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>

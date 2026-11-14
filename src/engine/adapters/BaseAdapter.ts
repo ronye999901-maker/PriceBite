@@ -1,4 +1,4 @@
-import { PlatformResult, PlatformOffer, PlatformId } from '../../types';
+import { PlatformResult, PlatformId, IngestionMetadata } from '../../types';
 
 export interface RawPlatformItem {
   id: string;
@@ -18,6 +18,7 @@ export interface RawPlatformItem {
   orderUrl: string;
   applicableCoupons: string[];
   applicableBankOffers: string[];
+  ingestionMeta?: IngestionMetadata;
 }
 
 export abstract class BasePlatformAdapter {
@@ -30,7 +31,11 @@ export abstract class BasePlatformAdapter {
     pinCode: string
   ): Promise<RawPlatformItem | null>;
 
-  protected calculateBreakdown(raw: RawPlatformItem, selectedBankCard?: string): PlatformResult {
+  protected calculateBreakdown(
+    raw: RawPlatformItem,
+    selectedBankCard?: string,
+    meta?: IngestionMetadata
+  ): PlatformResult {
     let couponDiscount = 0;
     if (raw.discount > 0) {
       couponDiscount = Math.min(raw.discount, 50);
@@ -59,6 +64,7 @@ export abstract class BasePlatformAdapter {
       orderUrl: raw.orderUrl,
       appliedCoupons: raw.applicableCoupons,
       appliedBankOffers: raw.applicableBankOffers,
+      ingestionMeta: meta || raw.ingestionMeta,
       priceBreakdown: {
         basePrice: raw.basePrice,
         discount: raw.discount,

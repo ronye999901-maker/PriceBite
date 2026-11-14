@@ -165,35 +165,36 @@ export function App() {
       return;
     }
 
-    const q = query.toLowerCase().trim();
-    const filtered = sourceDataset.filter((item) => {
-      const nameMatch = item.name.toLowerCase().includes(q);
-      const categoryMatch = item.category.toLowerCase().includes(q);
-      const brandMatch = item.restaurantOrBrand.toLowerCase().includes(q);
-      const descMatch = item.description.toLowerCase().includes(q);
-      return nameMatch || categoryMatch || brandMatch || descMatch;
-    });
+    const q = query.trim();
 
-    const evaluated = filtered.map((item) => {
-      const matchEval = evaluateProductMatch(
-        item.name,
-        item.name,
-        item.category,
-        item.category,
-        item.restaurantOrBrand,
-        item.restaurantOrBrand
-      );
+    // Evaluate every candidate product through the Hybrid Semantic-Lexical Engine
+    const evaluated = sourceDataset
+      .map((item) => {
+        const matchEval = evaluateProductMatch(
+          q,
+          item.name,
+          item.restaurantOrBrand,
+          item.quantity,
+          item.category,
+          item.description
+        );
 
-      const enrichedPlatforms = enrichPlatformResultsWithSavings(item.platformResults);
+        const enrichedPlatforms = enrichPlatformResultsWithSavings(item.platformResults);
 
-      return {
-        ...item,
-        matchType: matchEval.matchType,
-        matchScore: matchEval.matchScore,
-        matchNotes: matchEval.matchNotes,
-        platformResults: enrichedPlatforms,
-      };
-    });
+        return {
+          ...item,
+          matchType: matchEval.matchType,
+          matchScore: matchEval.matchScore,
+          matchNotes: matchEval.matchNotes,
+          semanticSimilarity: matchEval.semanticSimilarity,
+          lexicalSimilarity: matchEval.lexicalSimilarity,
+          portionCongruence: matchEval.portionCongruence,
+          detectedSynonyms: matchEval.detectedSynonyms,
+          platformResults: enrichedPlatforms,
+        };
+      })
+      .filter((item) => item.matchType !== 'DIFFERENT' || item.matchScore >= 40)
+      .sort((a, b) => b.matchScore - a.matchScore);
 
     setSearchResults(evaluated);
   };

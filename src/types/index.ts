@@ -62,6 +62,14 @@ export interface PriceBreakdown {
   savingsVsNextCheapest?: number;
 }
 
+export interface IngestionMetadata {
+  source: 'LIVE_NETWORK' | 'L1_CACHE' | 'L2_CACHE' | 'SYNTHETIC_FALLBACK';
+  latencyMs: number;
+  fetchedAt: number;
+  ttlRemainingSeconds?: number;
+  circuitState?: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+}
+
 export interface PlatformResult {
   platformId: PlatformId;
   platformName: string;
@@ -75,6 +83,7 @@ export interface PlatformResult {
   appliedCoupons?: string[];
   appliedBankOffers?: string[];
   isDirectAppOrder?: boolean;
+  ingestionMeta?: IngestionMetadata;
 }
 
 export interface ProductComparisonItem {
@@ -89,6 +98,10 @@ export interface ProductComparisonItem {
   matchType: MatchType;
   matchScore: number;
   matchNotes: string;
+  semanticSimilarity?: number;
+  lexicalSimilarity?: number;
+  portionCongruence?: number;
+  detectedSynonyms?: string[];
   platformResults: PlatformResult[];
   cheapestPlatformId: PlatformId;
   fastestPlatformId: PlatformId;
