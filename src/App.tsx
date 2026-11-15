@@ -591,6 +591,13 @@ export function App() {
               restaurants={restaurantsForLocation}
               currentLang={currentLang}
               themeMode={themeMode}
+              currentPinDetails={currentPinDetails}
+              onOpenPinModal={() => setIsPinModalOpen(true)}
+              onSelectRestaurant={(restaurant) => {
+                const cleanQuery = restaurant.name.split('(')[0].split('-')[0].trim();
+                handleSearch(cleanQuery);
+                setActiveTab('search');
+              }}
             />
           </div>
         )}

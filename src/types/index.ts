@@ -130,6 +130,12 @@ export interface RestaurantComparison {
   area: string;
   availablePlatforms: RestaurantPlatformDetails[];
   cheapestPlatformId: PlatformId;
+  category?: string;
+  distanceKm?: number;
+  isPureVeg?: boolean;
+  featuredDishes?: string[];
+  isDirectPartner?: boolean;
+  zoneTag?: string;
 }
 
 export interface PINCodeDetails {

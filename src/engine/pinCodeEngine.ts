@@ -278,3 +278,148 @@ export function lookupPINCode(pinCode: string): PINCodeDetails | null {
     languageNativeName: langNative,
   };
 }
+
+export type GeographicZone = 
+  | 'kolkata' 
+  | 'midnapore' 
+  | 'bengaluru' 
+  | 'mumbai' 
+  | 'pune' 
+  | 'delhi_ncr' 
+  | 'hyderabad' 
+  | 'chennai' 
+  | 'ahmedabad' 
+  | 'regional_general';
+
+export interface ZoneInfo {
+  zoneId: GeographicZone;
+  zoneName: string;
+  majorCity: string;
+  regionalCuisineTitle: string;
+  darkStoreRadiusKm: number;
+}
+
+export function getGeographicZone(pin: PINCodeDetails | null): ZoneInfo {
+  if (!pin || !pin.pinCode) {
+    return {
+      zoneId: 'kolkata',
+      zoneName: 'Greater Kolkata & Bengal Hub',
+      majorCity: 'Kolkata',
+      regionalCuisineTitle: 'Kolkata Biryani & Bengali Specialties',
+      darkStoreRadiusKm: 4.5,
+    };
+  }
+
+  const p = pin.pinCode.trim();
+  const d = (pin.district || '').toLowerCase();
+  const s = (pin.state || '').toLowerCase();
+  const a = (pin.area || '').toLowerCase();
+
+  // 1. Midnapore & Kharagpur (721xxx)
+  if (p.startsWith('721') || d.includes('medinipur') || d.includes('kharagpur')) {
+    return {
+      zoneId: 'midnapore',
+      zoneName: 'Paschim Medinipur & Kharagpur Zone',
+      majorCity: 'Midnapore / Kharagpur',
+      regionalCuisineTitle: 'Bengal Heritage & Highway Dhaba Specialties',
+      darkStoreRadiusKm: 6.0,
+    };
+  }
+
+  // 2. Kolkata, New Town & Howrah (700xxx, 711xxx, 712xxx, 743xxx)
+  if (p.startsWith('700') || p.startsWith('711') || p.startsWith('712') || d.includes('kolkata') || d.includes('new town') || d.includes('salt lake') || d.includes('howrah') || s.includes('bengal')) {
+    return {
+      zoneId: 'kolkata',
+      zoneName: 'Greater Kolkata & New Town Metro',
+      majorCity: 'Kolkata',
+      regionalCuisineTitle: 'Kolkata Biryani, Mughlai & Bengali Heritage',
+      darkStoreRadiusKm: 4.0,
+    };
+  }
+
+  // 3. Bengaluru (560xxx, 561xxx, 562xxx)
+  if (p.startsWith('560') || p.startsWith('561') || p.startsWith('562') || d.includes('bengaluru') || d.includes('bangalore') || s.includes('karnataka')) {
+    return {
+      zoneId: 'bengaluru',
+      zoneName: 'Bengaluru Tech Corridor & Metro',
+      majorCity: 'Bengaluru',
+      regionalCuisineTitle: 'Ghee Podi Dosas, Andhra Biryani & Craft Burgers',
+      darkStoreRadiusKm: 4.0,
+    };
+  }
+
+  // 4. Mumbai (400xxx, 401xxx)
+  if (p.startsWith('400') || p.startsWith('401') || d.includes('mumbai') || d.includes('thane') || d.includes('navi mumbai') || a.includes('bandra') || a.includes('andheri')) {
+    return {
+      zoneId: 'mumbai',
+      zoneName: 'Mumbai Metropolitan Region',
+      majorCity: 'Mumbai',
+      regionalCuisineTitle: 'Amul Butter Pav Bhaji, Coastal Seafood & Irani Cafe',
+      darkStoreRadiusKm: 3.5,
+    };
+  }
+
+  // 5. Pune (411xxx, 412xxx)
+  if (p.startsWith('411') || p.startsWith('412') || d.includes('pune') || (s.includes('maharashtra') && !p.startsWith('400'))) {
+    return {
+      zoneId: 'pune',
+      zoneName: 'Pune Cultural & IT Zone',
+      majorCity: 'Pune',
+      regionalCuisineTitle: 'Misal Pav, SPDP, Mastani & Maharashtrian Thali',
+      darkStoreRadiusKm: 5.0,
+    };
+  }
+
+  // 6. Delhi NCR (110xxx, 201xxx, 122xxx)
+  if (p.startsWith('110') || p.startsWith('201') || p.startsWith('122') || d.includes('delhi') || d.includes('noida') || d.includes('gurgaon') || d.includes('gurugram') || d.includes('ghaziabad')) {
+    return {
+      zoneId: 'delhi_ncr',
+      zoneName: 'Delhi NCR Capital Region',
+      majorCity: 'Delhi NCR',
+      regionalCuisineTitle: 'Old Delhi Butter Chicken, Chole Bhature & Mughlai',
+      darkStoreRadiusKm: 5.0,
+    };
+  }
+
+  // 7. Hyderabad (500xxx, 501xxx, 502xxx)
+  if (p.startsWith('500') || p.startsWith('501') || p.startsWith('502') || d.includes('hyderabad') || d.includes('secunderabad') || s.includes('telangana') || s.includes('andhra')) {
+    return {
+      zoneId: 'hyderabad',
+      zoneName: 'Hyderabad Deccan & Cyberabad Zone',
+      majorCity: 'Hyderabad',
+      regionalCuisineTitle: 'Hyderabadi Dum Biryani, Haleem & Irani Chai',
+      darkStoreRadiusKm: 4.5,
+    };
+  }
+
+  // 8. Chennai (600xxx, 601xxx, 602xxx)
+  if (p.startsWith('600') || p.startsWith('601') || p.startsWith('602') || d.includes('chennai') || s.includes('tamil')) {
+    return {
+      zoneId: 'chennai',
+      zoneName: 'Chennai Metropolis & Coastal Zone',
+      majorCity: 'Chennai',
+      regionalCuisineTitle: 'Chettinad Pepper Chicken, Ghee Idli & Filter Kaapi',
+      darkStoreRadiusKm: 4.5,
+    };
+  }
+
+  // 9. Ahmedabad / Gujarat (380xxx, 382xxx)
+  if (p.startsWith('380') || p.startsWith('382') || d.includes('ahmedabad') || s.includes('gujarat')) {
+    return {
+      zoneId: 'ahmedabad',
+      zoneName: 'Ahmedabad & Gujarat Hub',
+      majorCity: 'Ahmedabad',
+      regionalCuisineTitle: 'Gujarati Kathiyawadi Thali, Fafda & Maskabun',
+      darkStoreRadiusKm: 5.0,
+    };
+  }
+
+  // 10. Regional General Fallback for any other valid Indian PIN
+  return {
+    zoneId: 'regional_general',
+    zoneName: `${pin.district || 'Regional'} Express Delivery Zone`,
+    majorCity: pin.district || 'Local City',
+    regionalCuisineTitle: `${pin.state || 'Local'} Regional Specialties & National QSRs`,
+    darkStoreRadiusKm: 6.5,
+  };
+}
