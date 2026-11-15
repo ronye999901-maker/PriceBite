@@ -18,6 +18,18 @@ interface DirectFoodItem {
   rating: number;
   portionSize: string;
   isVeg: boolean;
+  /**
+   * Optional promotional offers attached to the dish, e.g. "₹200 off" or "50% off".
+   */
+  offers?: Offer[];
+}
+
+/** Simple offer model used by the UI */
+interface Offer {
+  /** Short label shown as a badge, e.g. "₹200 off" */
+  label: string;
+  /** Optional expiry date (ISO string) – not used in UI now but kept for future */
+  expiresAt?: string;
 }
 
 import { UserProfile } from '../../types';
