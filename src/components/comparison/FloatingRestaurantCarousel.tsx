@@ -15,7 +15,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { getTranslation } from '../../i18n';
-import { RestaurantMenuModal } from '../direct/RestaurantMenuModal';
 
 interface FloatingRestaurantCarouselProps {
   restaurants: RestaurantComparison[];
@@ -39,8 +38,6 @@ export const FloatingRestaurantCarousel: React.FC<FloatingRestaurantCarouselProp
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'recommended' | 'fastest' | 'rating' | 'cost_low'>('recommended');
-  // State for the full-menu modal (restaurant name + offers + dishes)
-  const [menuRestaurant, setMenuRestaurant] = useState<{ id: string; name: string } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -609,19 +606,6 @@ export const FloatingRestaurantCarousel: React.FC<FloatingRestaurantCarouselProp
                       <span className="truncate">{directPlatform?.activeOffers[0] || 'Flat 15% Cashback on Direct Pay'}</span>
                     </div>
 
-                    {/* View Full Menu Button – opens Swiggy/Zomato-style menu modal */}
-                    <button
-                      onClick={() => setMenuRestaurant({ id: rest.id, name: rest.name })}
-                      className={
-                        'w-full py-2 rounded-2xl border font-black text-xs flex items-center justify-center space-x-1.5 transition-all ' +
-                        (isLight
-                          ? 'border-orange-400 text-orange-600 hover:bg-orange-50'
-                          : 'border-orange-500/50 text-orange-400 hover:bg-orange-500/10')
-                      }
-                    >
-                      <span>📋 View Full Menu</span>
-                    </button>
-
                     {/* Action Button */}
                     {onSelectRestaurant ? (
                       <button
@@ -643,15 +627,6 @@ export const FloatingRestaurantCarousel: React.FC<FloatingRestaurantCarouselProp
           </div>
         )}
       </div>
-
-      {/* RestaurantMenuModal – shown when user clicks "View Full Menu" on a restaurant card */}
-      {menuRestaurant && (
-        <RestaurantMenuModal
-          restaurantId={menuRestaurant.id}
-          restaurantName={menuRestaurant.name}
-          onClose={() => setMenuRestaurant(null)}
-        />
-      )}
     </div>
   );
 };
