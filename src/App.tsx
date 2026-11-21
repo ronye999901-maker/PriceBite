@@ -22,7 +22,7 @@ import { UPIPaymentModal } from './components/checkout/UPIPaymentModal';
 import { OrderTrackingModal } from './components/tracking/OrderTrackingModal';
 import { OrderReceiptModal } from './components/receipt/OrderReceiptModal';
 
-import { getProductsForLocation, getRestaurantsForLocation } from './mock/foodData';
+import { getProductsForLocation, getRestaurantsForLocation, generateUniversalDishProducts } from './mock/foodData';
 import {
   LanguageCode,
   PINCodeDetails,
@@ -169,7 +169,7 @@ export function App() {
     const q = query.trim();
 
     // Evaluate every candidate product through the Hybrid Semantic-Lexical Engine
-    const evaluated = sourceDataset
+    let evaluated: ProductComparisonItem[] = sourceDataset
       .map((item) => {
         const matchEval = evaluateProductMatch(
           q,
@@ -196,6 +196,16 @@ export function App() {
       })
       .filter((item) => item.matchType !== 'DIFFERENT' || item.matchScore >= 40)
       .sort((a, b) => b.matchScore - a.matchScore);
+
+    // Universal Dynamic Food Search:
+    // If fewer than 2 results match or user searched any specific dish in the market,
+    // dynamically generate multi-restaurant comparison cards for that exact dish in this PIN code!
+    if (evaluated.length < 2) {
+      const dynamicItems = generateUniversalDishProducts(q, currentPinDetails);
+      const existingIds = new Set(evaluated.map((i) => i.id));
+      const freshItems = dynamicItems.filter((i) => !existingIds.has(i.id));
+      evaluated = [...evaluated, ...freshItems];
+    }
 
     setSearchResults(evaluated);
   };

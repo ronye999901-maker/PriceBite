@@ -1,7 +1,7 @@
 import { ProductComparisonItem, LanguageCode, PINCodeDetails } from '../types';
 import { evaluateProductMatch } from './matchingEngine';
 import { DIRECT_PROMO_COUPONS, DIRECT_PARTNER_RESTAURANTS } from '../mock/directRestaurantData';
-import { getProductsForLocation } from '../mock/foodData';
+import { getProductsForLocation, generateUniversalDishProducts } from '../mock/foodData';
 
 export interface DealBotResponse {
   text: string;
@@ -264,6 +264,18 @@ export function analyzeDealBotQuery(
 
     return {
       text: `For "${rawQuery}", the cheapest deal is **${matched.name}** on **${cheapest.platformName}** at **₹${cheapest.priceBreakdown.finalPayablePrice}** (You save ₹${cheapest.priceBreakdown.savingsVsNextCheapest || 25} vs competitors).`,
+      recommendedProduct: matched,
+      followUpActions: [`Show coupons`, `Food under ₹250`, `Fastest delivery < 20m`],
+    };
+  }
+
+  // Universal dynamic check for any dish in the market
+  const universalMatches = generateUniversalDishProducts(rawQuery, currentPin);
+  if (universalMatches.length > 0) {
+    const matched = universalMatches[0];
+    const cheapest = matched.platformResults.find((p) => p.platformId === matched.cheapestPlatformId) || matched.platformResults[0];
+    return {
+      text: `For "${rawQuery}", top restaurants in your area have it! The best option is **${matched.name}** on **${cheapest.platformName}** for **₹${cheapest.priceBreakdown.finalPayablePrice}**.`,
       recommendedProduct: matched,
       followUpActions: [`Show coupons`, `Food under ₹250`, `Fastest delivery < 20m`],
     };
