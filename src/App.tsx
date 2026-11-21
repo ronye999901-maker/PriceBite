@@ -110,6 +110,7 @@ export function App() {
   const [redirectingPlatform, setRedirectingPlatform] = useState<{
     platform: PlatformResult;
     productName: string;
+    restaurantName?: string;
   } | null>(null);
 
   // Persistent User Profile with Cart & Order History Database
@@ -432,7 +433,7 @@ export function App() {
     }));
   };
 
-  const handleOrderRedirect = (platform: PlatformResult, productName: string) => {
+  const handleOrderRedirect = (platform: PlatformResult, productName: string, restaurantName?: string) => {
     if (platform.isDirectAppOrder) {
       const found = productsForLocation.find((p) => p.name === productName);
       if (found) {
@@ -440,7 +441,9 @@ export function App() {
         return;
       }
     }
-    setRedirectingPlatform({ platform, productName });
+    const matched = productsForLocation.find((p) => p.name === productName);
+    const restName = restaurantName || matched?.restaurantOrBrand;
+    setRedirectingPlatform({ platform, productName, restaurantName: restName });
   };
 
   const handleExecutePlatformRedirect = (orderUrl: string) => {
@@ -575,7 +578,7 @@ export function App() {
                       setBreakdownPlatform(platform);
                       setBreakdownProductName(product.name);
                     }}
-                    onRedirectOrder={(platform) => handleOrderRedirect(platform, product.name)}
+                    onRedirectOrder={(platform) => handleOrderRedirect(platform, product.name, product.restaurantOrBrand)}
                     onOpenPriceHistory={(prod) => setHistoryProduct(prod)}
                     onOpenPriceAlert={(prod) => setAlertProduct(prod)}
                   />
@@ -778,10 +781,15 @@ export function App() {
 
             <div>
               <h3 className="text-xl font-black">
-                Direct Order on {redirectingPlatform.platform.platformName}
+                {redirectingPlatform.restaurantName
+                  ? `${redirectingPlatform.restaurantName}`
+                  : `Order on ${redirectingPlatform.platform.platformName}`}
               </h3>
+              <p className="text-sm font-semibold text-slate-400 mt-1">
+                {redirectingPlatform.productName}
+              </p>
               <p className="text-xs text-amber-500 font-bold mt-1">
-                Final Payable Price: ₹{redirectingPlatform.platform.priceBreakdown.finalPayablePrice}
+                Final Payable Price: ₹{redirectingPlatform.platform.priceBreakdown.finalPayablePrice} on {redirectingPlatform.platform.platformName}
               </p>
             </div>
 
@@ -792,12 +800,16 @@ export function App() {
             >
               <div className="flex items-center space-x-2 text-emerald-500 font-bold">
                 <CheckCircle className="w-4 h-4" />
-                <span>Verified Direct Deep Link Active</span>
+                <span>Verified Direct Restaurant Menu Deep Link</span>
               </div>
-              <p className="text-slate-400">
-                PriceBite is opening the official dish page on {redirectingPlatform.platform.platformName}
+              <p className="text-slate-400 leading-relaxed">
+                PriceBite is opening the official menu of{' '}
+                <strong className="text-slate-200 font-bold">
+                  {redirectingPlatform.restaurantName || 'this restaurant'}
+                </strong>{' '}
+                on {redirectingPlatform.platform.platformName}
                 {currentPinDetails
-                  ? ` for delivery to 📍 ${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
+                  ? ` for fast delivery to 📍 ${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
                   : ''}
                 .
               </p>
@@ -809,7 +821,9 @@ export function App() {
                 className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-400 hover:to-yellow-400 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-xl shadow-orange-500/20 transition-all flex items-center justify-center space-x-2"
               >
                 <Smartphone className="w-4 h-4" />
-                <span>Open {redirectingPlatform.platform.platformName} App / Web Page</span>
+                <span>
+                  Open {redirectingPlatform.restaurantName || 'Store'} on {redirectingPlatform.platform.platformName} →
+                </span>
               </button>
 
               <button
