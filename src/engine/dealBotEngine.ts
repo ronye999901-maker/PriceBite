@@ -1,22 +1,11 @@
-import { ProductComparisonItem, LanguageCode, PINCodeDetails, PlatformResult } from '../types';
+import { ProductComparisonItem, LanguageCode, PINCodeDetails } from '../types';
 import { evaluateProductMatch } from './matchingEngine';
-import { runTOPSISAnalysis } from './recommendationEngine';
 import { DIRECT_PROMO_COUPONS, DIRECT_PARTNER_RESTAURANTS } from '../mock/directRestaurantData';
 import { getProductsForLocation } from '../mock/foodData';
 
 export interface DealBotResponse {
   text: string;
   recommendedProduct?: ProductComparisonItem;
-  comparisonBreakdown?: {
-    platformId: string;
-    platformName: string;
-    logo: string;
-    price: number;
-    etaMinutes: number;
-    savings: number;
-    isBest?: boolean;
-    topsisScore?: number;
-  }[];
   couponInfo?: {
     code: string;
     title: string;
@@ -31,22 +20,73 @@ export interface DealBotResponse {
     heroOffer: string;
     featuredDish: string;
   };
-  followUpActions: string[];
+  followUpActions?: string[];
 }
 
 /**
- * Intelligent Multi-Intent Parser and Reasoning Engine for DealBot AI
+ * Clean, direct, and intelligent conversational response engine.
+ * Answers exactly what the user asks without unsolicited spam.
  */
 export function analyzeDealBotQuery(
   rawQuery: string,
   currentLang: LanguageCode = 'en',
-  currentPin: PINCodeDetails | null = null,
-  userPreferences: { isVegOnly?: boolean; lastBudget?: number } = {}
+  currentPin: PINCodeDetails | null = null
 ): DealBotResponse {
   const q = rawQuery.toLowerCase().trim();
   const allProducts = getProductsForLocation(currentPin);
 
-  // 1. INTENT: PROMO CODES & COUPONS
+  // 1. GREETINGS & CASUAL CONVERSATION (Direct & friendly, no dish spam)
+  if (
+    /^(hi|hello|hey|hola|namaste|good\s*(morning|afternoon|evening)|yo|sup)\b/i.test(q) ||
+    q === 'hi' ||
+    q === 'hello' ||
+    q === 'hey'
+  ) {
+    let text = "Hello! How can I help you today? You can ask me for food suggestions, compare prices between Swiggy and Zomato, or find active discount coupons.";
+    if (currentLang === 'bn') {
+      text = "নমস্কার! আমি আপনাকে কীভাবে সাহায্য করতে পারি? খাবারের সন্ধান, দামের তুলনা বা ডিসকাউন্ট কুপন জানতে আমাকে যেকোনো প্রশ্ন করতে পারেন।";
+    } else if (currentLang === 'hi') {
+      text = "नमस्ते! मैं आपकी क्या मदद कर सकता हूँ? आप मुझसे खाने के सुझाव, स्विगी और ज़ोमैटो के दामों की तुलना, या डिस्काउंट कूपन के बारे में पूछ सकते हैं।";
+    }
+    return {
+      text,
+      followUpActions: ['🍗 Best Biryani under ₹250', '🏷️ Show active coupons', '⚡ Fastest delivery < 20m', '🌱 Pure Veg options'],
+    };
+  }
+
+  // 2. WHO ARE YOU / WHAT CAN YOU DO / ABOUT APP
+  if (
+    q.includes('who are you') ||
+    q.includes('what are you') ||
+    q.includes('what can you do') ||
+    q.includes('what is dealbot') ||
+    q.includes('who created you') ||
+    q.includes('who made you')
+  ) {
+    return {
+      text: "I am DealBot, PriceBite's intelligent food assistant. I compare live food prices across Swiggy, Zomato, and PriceBite Direct, help you find meals within your budget, and give you active discount promo codes.",
+      followUpActions: ['How does PriceBite save money?', 'Show active coupons', 'Find meals under ₹200'],
+    };
+  }
+
+  // 3. HOW DOES PRICEBITE WORK / WHY CHEAPER / PLATFORM FEES
+  if (
+    q.includes('how does it work') ||
+    q.includes('how pricebite works') ||
+    q.includes('how do you save') ||
+    q.includes('why cheaper') ||
+    q.includes('platform fee') ||
+    q.includes('commission') ||
+    q.includes('swiggy vs zomato') ||
+    q.includes('compare apps')
+  ) {
+    return {
+      text: "Swiggy and Zomato typically charge ₹5-₹15 platform fees, packaging markups, and delivery surge. PriceBite Direct connects you directly to partner kitchens with 0% extra commission, saving you 20% to 45% on identical meals.",
+      followUpActions: ['Show active coupons', 'Top partner restaurants', 'Chicken Biryani under ₹250'],
+    };
+  }
+
+  // 4. COUPONS & DISCOUNTS (Direct answer with the exact coupon code)
   if (
     q.includes('coupon') ||
     q.includes('promo') ||
@@ -56,303 +96,182 @@ export function analyzeDealBotQuery(
     q.includes('offer') ||
     q.includes('200 off') ||
     q.includes('50%') ||
-    q.includes('bogo') ||
-    q.includes('कूपन') ||
-    q.includes('অফার') ||
-    q.includes('কুপন')
+    q.includes('free delivery') ||
+    q.includes('কুপন') ||
+    q.includes('অফার')
   ) {
-    const bestCoupon = DIRECT_PROMO_COUPONS[0]; // PBDIRECT200
-    let text = `Here are today's active verified promo coupons! Apply code "${bestCoupon.code}" on PriceBite Direct to get ${bestCoupon.title} (${bestCoupon.discountSummary}). You can also use "DIRECT50" for 50% savings or "FREEDEL" for zero delivery fees!`;
-
-    if (currentLang === 'bn') {
-      text = `আজকের ভেরিফায়েড প্রোমো কুপন কোড! PriceBite Direct-এ "${bestCoupon.code}" কুপন ব্যবহার করে পান ${bestCoupon.title}! এছাড়া "DIRECT50" দিয়ে ৫০% ছাড় ও "FREEDEL" দিয়ে ফ্রি ডেলিভারি পান!`;
-    } else if (currentLang === 'hi') {
-      text = `आज के वेरीफाइड प्रोमो कूपन! PriceBite Direct पर कोड "${bestCoupon.code}" लगाएं और पाएं ${bestCoupon.title}! आप "DIRECT50" (50% छूट) या "FREEDEL" (फ्री डिलीवरी) भी इस्तेमाल कर सकते हैं!`;
-    }
-
-    return {
-      text,
-      couponInfo: {
-        code: bestCoupon.code,
-        title: bestCoupon.title,
-        discountSummary: bestCoupon.discountSummary,
-        discountAmount: bestCoupon.discountAmount,
-      },
-      followUpActions: [
-        'How to apply PBDIRECT200',
-        'Show Biryani deals',
-        'Meals under ₹200',
-        'Fastest delivery now',
-      ],
-    };
-  }
-
-  // 2. INTENT: SPECIFIC RESTAURANT INQUIRY
-  const matchedRestaurant = DIRECT_PARTNER_RESTAURANTS.find(
-    (r) =>
-      q.includes(r.name.toLowerCase()) ||
-      r.name.toLowerCase().includes(q) ||
-      (r.id.includes('arsalan') && (q.includes('arsalan') || q.includes('biryani'))) ||
-      (r.id.includes('kfc') && (q.includes('kfc') || q.includes('chicken bucket'))) ||
-      (r.id.includes('dominos') && (q.includes('domino') || q.includes('pizza'))) ||
-      (r.id.includes('chowman') && (q.includes('chowman') || q.includes('chinese') || q.includes('noodles'))) ||
-      (r.id.includes('petercat') && (q.includes('peter cat') || q.includes('chelo'))) ||
-      (r.id.includes('wowmomo') && (q.includes('wow') || q.includes('momo'))) ||
-      (r.id.includes('balaram') && (q.includes('balaram') || q.includes('sweet') || q.includes('rasogolla')))
-  );
-
-  if (matchedRestaurant && (q.includes(matchedRestaurant.name.toLowerCase()) || q.includes('menu') || q.includes('restaurant'))) {
-    const featDish = matchedRestaurant.menu[0];
-    let text = `${matchedRestaurant.name} (${matchedRestaurant.rating} ★, ${matchedRestaurant.deliveryMinutes} mins) is serving directly in PriceBite! Active Offer: "${matchedRestaurant.heroOffer}". Their top signature dish is ${featDish.name} starting at ₹${featDish.price} (Original ₹${featDish.originalPrice}). 0% extra commissions guaranteed!`;
-
-    if (currentLang === 'bn') {
-      text = `${matchedRestaurant.name} (${matchedRestaurant.rating} ★) সরাসরি PriceBite Direct-এ ডেলিভারি দিচ্ছে! বিশেষ অফার: "${matchedRestaurant.heroOffer}"। সেরা সিগনেচার ডিশ: ${featDish.name} মাত্র ₹${featDish.price}-এ!`;
-    } else if (currentLang === 'hi') {
-      text = `${matchedRestaurant.name} (${matchedRestaurant.rating} ★) PriceBite Direct पर उपलब्ध है! आज का ऑफर: "${matchedRestaurant.heroOffer}"। सबसे मशहूर डिश: ${featDish.name} सिर्फ ₹${featDish.price} में!`;
-    }
-
-    return {
-      text,
-      restaurantInfo: {
-        id: matchedRestaurant.id,
-        name: matchedRestaurant.name,
-        branchName: matchedRestaurant.branchName,
-        rating: matchedRestaurant.rating,
-        heroOffer: matchedRestaurant.heroOffer,
-        featuredDish: featDish.name,
-      },
-      followUpActions: [
-        `View ${matchedRestaurant.name} full menu`,
-        'Apply coupon on this order',
-        'Compare with Swiggy/Zomato',
-        'Food under ₹250',
-      ],
-    };
-  }
-
-  // 3. INTENT: BUDGET-CONSTRAINED QUERIES (e.g. "under ₹200", "< 300", "budget", "cheap")
-  const budgetMatch = q.match(/(?:under|below|less than|within|<|sub)\s*(?:rs\.?|inr|₹)?\s*(\d+)/i) ||
-                      q.match(/(?:₹|rs\.?)\s*(\d+)/i);
-  const budgetLimit = budgetMatch ? parseInt(budgetMatch[1], 10) : userPreferences.lastBudget || (q.includes('cheap') || q.includes('budget') || q.includes('সস্তা') || q.includes('कम दाम') ? 250 : null);
-
-  if (budgetLimit) {
-    // Find items where at least one platform has payable price <= budgetLimit
-    const budgetFiltered = allProducts.filter((p) => {
-      if (userPreferences.isVegOnly && !p.isVeg) return false;
-      const minPrice = Math.min(...p.platformResults.map((pr) => pr.priceBreakdown.finalPayablePrice));
-      return minPrice <= budgetLimit;
-    });
-
-    if (budgetFiltered.length > 0) {
-      // Pick best candidate using TOPSIS analysis
-      const scored = budgetFiltered.map((p) => {
-        const topsis = runTOPSISAnalysis(p.platformResults, 'budget');
-        const bestEval = topsis.rankedEvaluations[0];
-        return { product: p, topsis, bestEval };
-      });
-
-      scored.sort((a, b) => b.bestEval.closenessCoefficient - a.bestEval.closenessCoefficient);
-      const chosen = scored[0];
-      const prod = chosen.product;
-      const bestPlat = prod.platformResults.find((pr) => pr.platformId === chosen.bestEval.platformId) || prod.platformResults[0];
-
-      const breakdown = prod.platformResults.map((pr) => ({
-        platformId: pr.platformId,
-        platformName: pr.platformName,
-        logo: pr.platformLogo,
-        price: pr.priceBreakdown.finalPayablePrice,
-        etaMinutes: pr.deliveryTimeMinutes,
-        savings: pr.priceBreakdown.savingsVsHighest || 0,
-        isBest: pr.platformId === bestPlat.platformId,
-        topsisScore: Math.round(
-          (chosen.topsis.rankedEvaluations.find((e) => e.platformId === pr.platformId)?.closenessCoefficient || 0) * 100
-        ),
-      }));
-
-      let text = `Filtered for budget ≤ ₹${budgetLimit}! The top recommendation via TOPSIS Budget Persona is ${prod.name} on ${bestPlat.platformName} at ₹${bestPlat.priceBreakdown.finalPayablePrice}. You save ₹${bestPlat.priceBreakdown.savingsVsNextCheapest || 25} compared to other delivery apps!`;
-
-      if (currentLang === 'bn') {
-        text = `আপনার ₹${budgetLimit} বাজেটের মধ্যে সেরা চয়েস হলো ${bestPlat.platformName}-এ ${prod.name} মাত্র ₹${bestPlat.priceBreakdown.finalPayablePrice}-এ! অন্য অ্যাপের তুলনায় সাশ্রয় ₹${bestPlat.priceBreakdown.savingsVsNextCheapest || 25}!`;
-      } else if (currentLang === 'hi') {
-        text = `आपके ₹${budgetLimit} के बजट में TOPSIS एनालिसिस के अनुसार सबसे बढ़िया विकल्प ${bestPlat.platformName} पर ${prod.name} है, सिर्फ ₹${bestPlat.priceBreakdown.finalPayablePrice} में! अन्य ऐप्स की तुलना में ₹${bestPlat.priceBreakdown.savingsVsNextCheapest || 25} की बचत!`;
-      }
-
+    // If user asked for 200 off
+    if (q.includes('200') || q.includes('flat')) {
+      const c = DIRECT_PROMO_COUPONS.find((x) => x.code === 'PBDIRECT200') || DIRECT_PROMO_COUPONS[0];
       return {
-        text,
-        recommendedProduct: prod,
-        comparisonBreakdown: breakdown,
-        followUpActions: [
-          `More meals under ₹${budgetLimit}`,
-          'Show fastest delivery instead',
-          'Apply ₹200 off coupon',
-          'Pure veg options',
-        ],
+        text: `Use coupon code **${c.code}** to get flat ₹200 off on orders above ₹499 on PriceBite Direct.`,
+        couponInfo: {
+          code: c.code,
+          title: c.title,
+          discountSummary: c.discountSummary,
+          discountAmount: c.discountAmount,
+        },
+        followUpActions: ['Show 50% off coupon', 'Free delivery coupon', 'Biryani under ₹250'],
+      };
+    }
+
+    // If user asked for 50%
+    if (q.includes('50%') || q.includes('half')) {
+      const c = DIRECT_PROMO_COUPONS.find((x) => x.code === 'DIRECT50') || DIRECT_PROMO_COUPONS[1];
+      return {
+        text: `Use coupon code **${c.code}** to get 50% off up to ₹150 on all partner kitchen meals on PriceBite Direct.`,
+        couponInfo: {
+          code: c.code,
+          title: c.title,
+          discountSummary: c.discountSummary,
+          discountAmount: c.discountAmount,
+        },
+        followUpActions: ['Show ₹200 off coupon', 'Free delivery coupon'],
+      };
+    }
+
+    // General coupon inquiry
+    const topCoupon = DIRECT_PROMO_COUPONS[0];
+    return {
+      text: `Today's best coupon is **${topCoupon.code}** for flat ₹200 off on orders above ₹499. You can also use **DIRECT50** for 50% off or **FREEDEL** for zero delivery fees!`,
+      couponInfo: {
+        code: topCoupon.code,
+        title: topCoupon.title,
+        discountSummary: topCoupon.discountSummary,
+        discountAmount: topCoupon.discountAmount,
+      },
+      followUpActions: ['Apply PBDIRECT200', 'Show partner restaurants', 'Meals under ₹250'],
+    };
+  }
+
+  // 5. RESTAURANT SPECIFIC QUESTIONS (Direct answer about that restaurant)
+  for (const r of DIRECT_PARTNER_RESTAURANTS) {
+    const cleanName = r.name.toLowerCase();
+    const shortName = cleanName.split(' ')[0].replace(/[^a-z]/g, '');
+
+    if (q.includes(cleanName) || (shortName.length > 2 && q.includes(shortName))) {
+      const topDish = r.menu[0];
+      return {
+        text: `${r.name} (${r.rating} ★) delivers in about ${r.deliveryMinutes} mins. Active offer: **${r.heroOffer}**. Popular item: **${topDish.name}** at ₹${topDish.price} (Original ₹${topDish.originalPrice}).`,
+        restaurantInfo: {
+          id: r.id,
+          name: r.name,
+          branchName: r.branchName,
+          rating: r.rating,
+          heroOffer: r.heroOffer,
+          featuredDish: topDish.name,
+        },
+        followUpActions: [`Show meals under ₹250`, `Show active coupons`, `Fastest delivery < 20m`],
       };
     }
   }
 
-  // 4. INTENT: FASTEST DELIVERY / SPEED-FIRST
+  // 6. GENERAL FOOD SUGGESTION / WHAT TO EAT / DINNER ADVICE
   if (
-    q.includes('fast') ||
-    q.includes('quick') ||
-    q.includes('speed') ||
-    q.includes('20 min') ||
-    q.includes('urgent') ||
-    q.includes('hungry') ||
-    q.includes('starving') ||
-    q.includes('express') ||
-    q.includes('তাড়াতাড়ি') ||
-    q.includes('जल्दी')
+    q.includes('what should i eat') ||
+    q.includes('what to eat') ||
+    q.includes('suggest dinner') ||
+    q.includes('suggest lunch') ||
+    q.includes('what is good') ||
+    q.includes('confused') ||
+    q.includes('recommend something')
   ) {
-    const speedSorted = [...allProducts].sort((a, b) => {
+    return {
+      text: "Depending on your mood, here are three popular choices:\n• **Biryani:** Special Chicken Dum Biryani from Arsalan (₹199)\n• **Pizza:** Cheese Burst Margherita from Domino's (₹249)\n• **Chinese:** Hakka Noodles & Chilli Chicken from Chowman (₹219)\nWhich cuisine sounds good to you?",
+      followUpActions: ['🍗 Biryani options', '🍕 Pizza options', '🥟 Chinese options', '🌱 Pure Veg options'],
+    };
+  }
+
+  // 7. BUDGET CONSTRAINED FOOD SEARCH (e.g. "under ₹200", "under 250")
+  const budgetMatch = q.match(/(?:under|below|less than|within|<)\s*(?:rs\.?|inr|₹)?\s*(\d+)/i) ||
+                      q.match(/(?:₹|rs\.?)\s*(\d+)/i);
+  const budgetLimit = budgetMatch ? parseInt(budgetMatch[1], 10) : null;
+
+  if (budgetLimit) {
+    // Filter items matching budget
+    const withinBudget = allProducts.filter((p) => {
+      const minP = Math.min(...p.platformResults.map((pr) => pr.priceBreakdown.finalPayablePrice));
+      return minP <= budgetLimit;
+    });
+
+    if (withinBudget.length > 0) {
+      // If user also specified a food keyword (e.g. "biryani under 250")
+      let matched = withinBudget[0];
+      const keywordScored = withinBudget.map((p) => ({
+        product: p,
+        score: evaluateProductMatch(q, p.name, p.restaurantOrBrand, p.quantity, p.category, p.description).matchScore,
+      }));
+      keywordScored.sort((a, b) => b.score - a.score);
+      if (keywordScored[0] && keywordScored[0].score > 25) {
+        matched = keywordScored[0].product;
+      }
+
+      const cheapestPlat = matched.platformResults.find((p) => p.platformId === matched.cheapestPlatformId) || matched.platformResults[0];
+
+      return {
+        text: `Under ₹${budgetLimit}, the best option is **${matched.name}** on ${cheapestPlat.platformName} for **₹${cheapestPlat.priceBreakdown.finalPayablePrice}** (${cheapestPlat.deliveryTimeMinutes} mins delivery).`,
+        recommendedProduct: matched,
+        followUpActions: [`Show coupons for this`, `Show more under ₹${budgetLimit}`, `Fastest delivery`],
+      };
+    } else {
+      return {
+        text: `I couldn't find items under ₹${budgetLimit} in this zone. The lowest priced items start around ₹139 (like Steamed Momos or Desserts). Would you like to see those?`,
+        followUpActions: ['Show meals under ₹150', 'Show active coupons'],
+      };
+    }
+  }
+
+  // 8. SPEED / FASTEST DELIVERY
+  if (q.includes('fast') || q.includes('quick') || q.includes('urgent') || q.includes('speed') || q.includes('20 min') || q.includes('hungry')) {
+    const sorted = [...allProducts].sort((a, b) => {
       const minA = Math.min(...a.platformResults.map((pr) => pr.deliveryTimeMinutes));
       const minB = Math.min(...b.platformResults.map((pr) => pr.deliveryTimeMinutes));
       return minA - minB;
     });
-
-    const chosen = speedSorted[0] || allProducts[0];
-    const fastestPlat = [...chosen.platformResults].sort((a, b) => a.deliveryTimeMinutes - b.deliveryTimeMinutes)[0];
-
-    const breakdown = chosen.platformResults.map((pr) => ({
-      platformId: pr.platformId,
-      platformName: pr.platformName,
-      logo: pr.platformLogo,
-      price: pr.priceBreakdown.finalPayablePrice,
-      etaMinutes: pr.deliveryTimeMinutes,
-      savings: pr.priceBreakdown.savingsVsHighest || 0,
-      isBest: pr.platformId === fastestPlat.platformId,
-    }));
-
-    let text = `For fastest delivery right now, ${fastestPlat.platformName} can deliver ${chosen.name} in just ${fastestPlat.deliveryTimeMinutes} minutes at ₹${fastestPlat.priceBreakdown.finalPayablePrice}! Guarded by PriceBite circuit breakers for guaranteed zero-delay delivery.`;
-
-    if (currentLang === 'bn') {
-      text = `সবচেয়ে দ্রুত ডেলিভারির জন্য ${fastestPlat.platformName} মাত্র ${fastestPlat.deliveryTimeMinutes} মিনিটে ${chosen.name} পৌঁছে দেবে ₹${fastestPlat.priceBreakdown.finalPayablePrice}-এ!`;
-    } else if (currentLang === 'hi') {
-      text = `सबसे तेज़ डिलीवरी: ${fastestPlat.platformName} सिर्फ ${fastestPlat.deliveryTimeMinutes} मिनट में ${chosen.name} डिलीवर करेगा (मूल्य: ₹${fastestPlat.priceBreakdown.finalPayablePrice})!`;
-    }
+    const fastestItem = sorted[0];
+    const fastestPlat = [...fastestItem.platformResults].sort((a, b) => a.deliveryTimeMinutes - b.deliveryTimeMinutes)[0];
 
     return {
-      text,
-      recommendedProduct: chosen,
-      comparisonBreakdown: breakdown,
-      followUpActions: [
-        'Cheapest price for this item',
-        'Biryani under ₹250',
-        'Show Domino pizza deals',
-        'Apply PBDIRECT200 coupon',
-      ],
+      text: `The fastest option right now is **${fastestItem.name}** on ${fastestPlat.platformName}, arriving in approximately **${fastestPlat.deliveryTimeMinutes} minutes** for ₹${fastestPlat.priceBreakdown.finalPayablePrice}.`,
+      recommendedProduct: fastestItem,
+      followUpActions: ['Show cheaper options', 'Show active coupons'],
     };
   }
 
-  // 5. INTENT: PURE VEG / DIETARY RESTRICTION
-  if (
-    q.includes('veg') ||
-    q.includes('vegetarian') ||
-    q.includes('shakahari') ||
-    q.includes('paneer') ||
-    q.includes('নিরামিষ') ||
-    q.includes('शाकाहारी')
-  ) {
-    const vegProducts = allProducts.filter((p) => p.isVeg);
-    const chosen = vegProducts[0] || allProducts[0];
-    const bestPlat = chosen.platformResults.find((p) => p.platformId === chosen.cheapestPlatformId) || chosen.platformResults[0];
-
-    const breakdown = chosen.platformResults.map((pr) => ({
-      platformId: pr.platformId,
-      platformName: pr.platformName,
-      logo: pr.platformLogo,
-      price: pr.priceBreakdown.finalPayablePrice,
-      etaMinutes: pr.deliveryTimeMinutes,
-      savings: pr.priceBreakdown.savingsVsHighest || 0,
-      isBest: pr.platformId === bestPlat.platformId,
-    }));
-
-    let text = `Filtered for 100% Pure Veg! The top match is ${chosen.name} from ${chosen.restaurantOrBrand}. Best price on ${bestPlat.platformName} at ₹${bestPlat.priceBreakdown.finalPayablePrice} (${bestPlat.deliveryTimeMinutes} mins delivery).`;
-
-    if (currentLang === 'bn') {
-      text = `১০০% নিরামিষ স্পেশাল! সেরা অপশন হলো ${chosen.name} (${chosen.restaurantOrBrand})। ${bestPlat.platformName}-এ সবচেয়ে কম দাম মাত্র ₹${bestPlat.priceBreakdown.finalPayablePrice}!`;
-    } else if (currentLang === 'hi') {
-      text = `100% शुद्ध शाकाहारी विकल्प! सबसे लोकप्रिय डिश ${chosen.restaurantOrBrand} की ${chosen.name} है। ${bestPlat.platformName} पर सबसे किफायती कीमत ₹${bestPlat.priceBreakdown.finalPayablePrice} में उपलब्ध है!`;
-    }
+  // 9. PURE VEG / VEGETARIAN
+  if (q.includes('pure veg') || q.includes('veg only') || q.includes('vegetarian') || q.includes('shakahari') || q.includes('নিরামিষ')) {
+    const vegItems = allProducts.filter((p) => p.isVeg);
+    const topVeg = vegItems[0] || allProducts[0];
+    const plat = topVeg.platformResults.find((p) => p.platformId === topVeg.cheapestPlatformId) || topVeg.platformResults[0];
 
     return {
-      text,
-      recommendedProduct: chosen,
-      comparisonBreakdown: breakdown,
-      followUpActions: [
-        'Show more veg thalis',
-        'Veg meals under ₹200',
-        'Sweets & desserts',
-        'Apply coupon PBDIRECT200',
-      ],
+      text: `For Pure Veg, a top pick is **${topVeg.name}** (${topVeg.restaurantOrBrand}) available on ${plat.platformName} at **₹${plat.priceBreakdown.finalPayablePrice}**.`,
+      recommendedProduct: topVeg,
+      followUpActions: ['Show more veg options', 'Veg meals under ₹200', 'Show active coupons'],
     };
   }
 
-  // 6. DEFAULT INTENT: GENERAL DISH SEARCH & HYBRID SEMANTIC MATCHING
-  // Evaluate all products through Hybrid NLP Matching Engine + TOPSIS
-  const scoredProducts = allProducts.map((p) => {
-    const match = evaluateProductMatch(
-      q,
-      p.name,
-      p.restaurantOrBrand,
-      p.quantity,
-      p.category,
-      p.description
-    );
-    const topsis = runTOPSISAnalysis(p.platformResults, 'balanced');
-    return { product: p, match, topsis };
+  // 10. SPECIFIC DISH QUERY (e.g. "Biryani", "Pizza", "Momos", "Burger", "Chicken", "Kebab", "Noodles")
+  const scored = allProducts.map((p) => {
+    const match = evaluateProductMatch(q, p.name, p.restaurantOrBrand, p.quantity, p.category, p.description);
+    return { product: p, score: match.matchScore };
   });
+  scored.sort((a, b) => b.score - a.score);
 
-  scoredProducts.sort((a, b) => {
-    // Primary sort: NLP Match Score, Secondary: TOPSIS Closeness
-    if (b.match.matchScore !== a.match.matchScore) {
-      return b.match.matchScore - a.match.matchScore;
-    }
-    return (
-      (b.topsis.rankedEvaluations[0]?.closenessCoefficient || 0) -
-      (a.topsis.rankedEvaluations[0]?.closenessCoefficient || 0)
-    );
-  });
+  if (scored[0] && scored[0].score >= 35) {
+    const matched = scored[0].product;
+    const cheapest = matched.platformResults.find((p) => p.platformId === matched.cheapestPlatformId) || matched.platformResults[0];
 
-  const topMatch = scoredProducts[0];
-  const matchedProd = topMatch && topMatch.match.matchScore > 15 ? topMatch.product : allProducts[0];
-  const topsisResult = runTOPSISAnalysis(matchedProd.platformResults, 'balanced');
-  const smartPickEval = topsisResult.rankedEvaluations[0];
-  const bestPlatform =
-    matchedProd.platformResults.find((p) => p.platformId === smartPickEval.platformId) ||
-    matchedProd.platformResults[0];
-
-  const breakdown = matchedProd.platformResults.map((pr) => {
-    const evalData = topsisResult.rankedEvaluations.find((e) => e.platformId === pr.platformId);
     return {
-      platformId: pr.platformId,
-      platformName: pr.platformName,
-      logo: pr.platformLogo,
-      price: pr.priceBreakdown.finalPayablePrice,
-      etaMinutes: pr.deliveryTimeMinutes,
-      savings: pr.priceBreakdown.savingsVsNextCheapest || 15,
-      isBest: pr.platformId === bestPlatform.platformId,
-      topsisScore: Math.round((evalData?.closenessCoefficient || 0) * 100),
+      text: `For "${rawQuery}", the cheapest deal is **${matched.name}** on **${cheapest.platformName}** at **₹${cheapest.priceBreakdown.finalPayablePrice}** (You save ₹${cheapest.priceBreakdown.savingsVsNextCheapest || 25} vs competitors).`,
+      recommendedProduct: matched,
+      followUpActions: [`Show coupons`, `Food under ₹250`, `Fastest delivery < 20m`],
     };
-  });
-
-  let text = `Evaluated 4 platforms using Hybrid NLP (Match Score: ${topMatch?.match.matchScore || 95}%) & TOPSIS MCDM! For "${rawQuery}", the mathematical top pick is ${matchedProd.name} on ${bestPlatform.platformName} at ₹${bestPlatform.priceBreakdown.finalPayablePrice} (${bestPlatform.deliveryTimeMinutes} mins, TOPSIS Score: ${Math.round(smartPickEval.closenessCoefficient * 100)}%). You save ₹${bestPlatform.priceBreakdown.savingsVsNextCheapest || 25}!`;
-
-  if (currentLang === 'bn') {
-    text = `হাইব্রিড NLP ও TOPSIS দিয়ে ৪টি প্ল্যাটফর্ম তুলনা করেছি! "${rawQuery}"-এর জন্য সেরা চয়েস হলো ${bestPlatform.platformName}-এ ${matchedProd.name} মাত্র ₹${bestPlatform.priceBreakdown.finalPayablePrice}-এ! আপনার সাশ্রয় ₹${bestPlatform.priceBreakdown.savingsVsNextCheapest || 25}!`;
-  } else if (currentLang === 'hi') {
-    text = `हाइब्रिड NLP और TOPSIS तकनीक से 4 प्लेटफ़ॉर्म्स का विश्लेषण किया! "${rawQuery}" के लिए सर्वोत्तम विकल्प ${bestPlatform.platformName} पर ${matchedProd.name} है, मात्र ₹${bestPlatform.priceBreakdown.finalPayablePrice} में! आपकी बचत: ₹${bestPlatform.priceBreakdown.savingsVsNextCheapest || 25}!`;
   }
 
+  // 11. GENERAL FALLBACK (DO NOT DEFAULT TO BIRYANI! Ask clearly and helpfully)
   return {
-    text,
-    recommendedProduct: matchedProd,
-    comparisonBreakdown: breakdown,
-    followUpActions: [
-      `Cheapest drinks to pair with this`,
-      `Food under ₹250`,
-      `Apply coupon PBDIRECT200`,
-      `Show Domino pizza deals`,
-    ],
+    text: `I'm not quite sure about "${rawQuery}". You can ask me:\n• A specific dish (e.g. "Chicken Biryani", "Margherita Pizza")\n• A price budget (e.g. "Dinner under ₹250")\n• Today's coupons (e.g. "Show active promo codes")\nWhat are you craving today?`,
+    followUpActions: ['🍗 Biryani under ₹250', '🏷️ Show active coupons', '⚡ Fastest delivery < 20m', '🌱 Pure Veg Meals'],
   };
 }

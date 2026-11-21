@@ -167,7 +167,6 @@ export const DealBotWidget: React.FC<DealBotWidgetProps> = ({
         text: result.text,
         timestamp: 'Just now',
         recommendedProduct: result.recommendedProduct,
-        comparisonBreakdown: result.comparisonBreakdown,
         couponInfo: result.couponInfo,
         restaurantInfo: result.restaurantInfo,
         quickActions: result.followUpActions,
@@ -279,46 +278,7 @@ export const DealBotWidget: React.FC<DealBotWidgetProps> = ({
             >
               <p className="leading-relaxed whitespace-pre-line text-xs">{msg.text}</p>
 
-              {/* 1. INTERACTIVE PLATFORM COMPARISON TABLE BREAKDOWN */}
-              {msg.comparisonBreakdown && msg.comparisonBreakdown.length > 0 && (
-                <div className="mt-3 p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
-                  <div className="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider pb-1 border-b border-slate-800/60">
-                    <span>Platform</span>
-                    <span>Price</span>
-                    <span>ETA</span>
-                    <span>TOPSIS Rank</span>
-                  </div>
-
-                  {msg.comparisonBreakdown.map((row) => (
-                    <div
-                      key={row.platformId}
-                      className={`flex items-center justify-between p-1.5 rounded-lg text-[11px] ${
-                        row.isBest
-                          ? 'bg-orange-500/15 border border-orange-500/40 text-orange-300 font-black'
-                          : 'text-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-1.5 truncate max-w-[120px]">
-                        <span>{row.logo}</span>
-                        <span className="truncate">{row.platformName}</span>
-                      </div>
-                      <span className="font-black text-amber-400">₹{row.price}</span>
-                      <span className="text-slate-400 text-[10px]">⏱️ {row.etaMinutes}m</span>
-                      {row.isBest ? (
-                        <span className="text-[9px] font-black bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded">
-                          #1 BEST VALUE
-                        </span>
-                      ) : row.topsisScore ? (
-                        <span className="text-[10px] text-slate-400">{row.topsisScore}%</span>
-                      ) : (
-                        <span className="text-[10px] text-slate-500">-</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* 2. VERIFIED COUPON CARD */}
+              {/* 1. VERIFIED COUPON CARD (Shown only when coupons are discussed) */}
               {msg.couponInfo && (
                 <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-orange-500/20 via-amber-500/15 to-transparent border border-orange-500/40 flex items-center justify-between">
                   <div>
