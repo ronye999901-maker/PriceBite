@@ -1132,6 +1132,25 @@ const NATIONWIDE_QSR_CHAINS: RestaurantSeed[] = [
   },
 ];
 
+/**
+ * Normalizes restaurant seed titles into pure, recognizable brand names
+ * (e.g. "Pizza Hut & Pan Crusts" -> "Pizza Hut", "Arsalan - Park Circus" -> "Arsalan")
+ * so Swiggy and Zomato search queries immediately resolve directly to that restaurant's store.
+ */
+export function getCleanRestaurantBrand(name: string): string {
+  const clean = name.replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
+  const lower = clean.toLowerCase();
+  if (lower.startsWith('subway')) return 'Subway';
+  if (lower.startsWith('haldiram')) return "Haldiram's";
+  if (lower.startsWith('starbucks')) return 'Starbucks';
+  if (lower.startsWith('domino')) return "Domino's Pizza";
+  if (lower.startsWith('pizza hut')) return 'Pizza Hut';
+  if (lower.startsWith('burger king')) return 'Burger King';
+  if (lower.startsWith('kfc')) return 'KFC';
+  if (lower.startsWith("mcdonald")) return "McDonald's";
+  return clean;
+}
+
 // ============================================================================
 // HYPERLOCAL RESOLVER: Returns EVERY restaurant available in the given PIN code!
 // ============================================================================
@@ -1238,7 +1257,7 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
   const products: ProductComparisonItem[] = [];
 
   combinedSeeds.forEach((rest, restIdx) => {
-    const cleanRestName = rest.name.split('(')[0].split('-')[0].trim();
+    const cleanRestName = getCleanRestaurantBrand(rest.name);
     const distanceKm = Number((1.2 + (restIdx * 0.18) % 4.5).toFixed(1));
     const directDeliveryTime = Math.max(12, Math.min(22, 12 + Math.round(distanceKm * 2.2)));
     const aggregatorDeliveryTime = directDeliveryTime + 10 + (restIdx % 8);
@@ -1269,9 +1288,9 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
         lowerDish.includes('dal') ||
         lowerDish.includes('mishti');
 
-      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC RESTAURANT'S MENU ON SWIGGY & ZOMATO
-      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(`${cleanRestName} ${dish}`)}`;
-      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(`${cleanRestName} ${dish}`)}`;
+      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC RESTAURANT'S OFFICIAL STORE ON SWIGGY & ZOMATO
+      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanRestName)}`;
+      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanRestName)}`;
 
       // PriceBite Direct prices (always lowest with 0% extra commissions)
       const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1460,7 +1479,7 @@ export function generateUniversalDishProducts(
   const products: ProductComparisonItem[] = [];
 
   selectedSeeds.forEach((rest, restIdx) => {
-    const cleanRestName = rest.name.split('(')[0].split('-')[0].trim();
+    const cleanRestName = getCleanRestaurantBrand(rest.name);
     const distanceKm = Number((1.2 + ((restIdx * 0.22) % 4.5)).toFixed(1));
     const directDeliveryTime = Math.max(12, Math.min(24, 12 + Math.round(distanceKm * 2.2)));
     const aggregatorDeliveryTime = directDeliveryTime + 10 + (restIdx % 6);
@@ -1487,9 +1506,9 @@ export function generateUniversalDishProducts(
       lowerQ.includes('chai') ||
       lowerQ.includes('pasta'));
 
-    // Deep-links directly to this specific restaurant's menu for this food on Swiggy & Zomato
-    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(`${cleanRestName} ${formattedDishName}`)}`;
-    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(`${cleanRestName} ${formattedDishName}`)}`;
+    // Deep-links directly to this specific restaurant's official store on Swiggy & Zomato
+    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanRestName)}`;
+    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanRestName)}`;
 
     // PriceBite Direct prices (always lowest with 0% extra commissions)
     const pbDiscount = Math.round(dishBasePrice * 0.22);
