@@ -1134,21 +1134,35 @@ const NATIONWIDE_QSR_CHAINS: RestaurantSeed[] = [
 
 /**
  * Normalizes restaurant seed titles into pure, recognizable brand names
- * (e.g. "Pizza Hut & Pan Crusts" -> "Pizza Hut", "Arsalan - Park Circus" -> "Arsalan")
+ * (e.g. "Pizza Hut & Pan Crusts" -> "Pizza Hut", "Arsalan Dum Biryani" -> "Arsalan")
  * so Swiggy and Zomato search queries immediately resolve directly to that restaurant's store.
  */
 export function getCleanRestaurantBrand(name: string): string {
-  const clean = name.replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
+  let clean = name.replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
+  clean = clean.replace(/\s+(Dum Biryani|Restaurant|Hotel|Cafe|Bar|Dhaba)$/i, '').trim();
   const lower = clean.toLowerCase();
   if (lower.startsWith('subway')) return 'Subway';
   if (lower.startsWith('haldiram')) return "Haldiram's";
   if (lower.startsWith('starbucks')) return 'Starbucks';
-  if (lower.startsWith('domino')) return "Domino's Pizza";
+  if (lower.startsWith('domino')) return "Domino's";
   if (lower.startsWith('pizza hut')) return 'Pizza Hut';
   if (lower.startsWith('burger king')) return 'Burger King';
   if (lower.startsWith('kfc')) return 'KFC';
   if (lower.startsWith("mcdonald")) return "McDonald's";
   return clean;
+}
+
+/**
+ * Strips parentheses, symbols, and portion noise from dish names
+ * (e.g. "Mutton Special Biryani (2 Pcs)" -> "Mutton Special Biryani")
+ * so search queries on Swiggy and Zomato trigger the Dishes tab for that exact item.
+ */
+export function getCleanDishName(dish: string): string {
+  return dish
+    .replace(/\s*\([^)]*\)/g, '')
+    .replace(/[&+/,]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // ============================================================================
@@ -1288,9 +1302,12 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
         lowerDish.includes('dal') ||
         lowerDish.includes('mishti');
 
-      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC RESTAURANT'S OFFICIAL STORE ON SWIGGY & ZOMATO
-      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanRestName)}`;
-      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanRestName)}`;
+      const cleanDish = getCleanDishName(dish);
+      const searchPhrase = `${cleanRestName} ${cleanDish}`;
+
+      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC DISH ON SWIGGY & ZOMATO
+      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(searchPhrase)}`;
+      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(searchPhrase)}`;
 
       // PriceBite Direct prices (always lowest with 0% extra commissions)
       const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1506,9 +1523,12 @@ export function generateUniversalDishProducts(
       lowerQ.includes('chai') ||
       lowerQ.includes('pasta'));
 
-    // Deep-links directly to this specific restaurant's official store on Swiggy & Zomato
-    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanRestName)}`;
-    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanRestName)}`;
+    const cleanDish = getCleanDishName(formattedDishName);
+    const searchPhrase = `${cleanRestName} ${cleanDish}`;
+
+    // Deep-links directly to this specific restaurant & dish on Swiggy & Zomato
+    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(searchPhrase)}`;
+    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(searchPhrase)}`;
 
     // PriceBite Direct prices (always lowest with 0% extra commissions)
     const pbDiscount = Math.round(dishBasePrice * 0.22);
