@@ -748,6 +748,7 @@ export function App() {
         isOpen={isDealBotOpen}
         onClose={() => setIsDealBotOpen(false)}
         currentLang={currentLang}
+        currentPinDetails={currentPinDetails}
         onSelectProduct={(prod) => {
           setSearchResults([prod]);
           setActiveTab('search');

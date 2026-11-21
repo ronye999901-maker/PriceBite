@@ -224,6 +224,30 @@ export interface DealBotMessage {
   timestamp: string;
   quickActions?: string[];
   recommendedProduct?: ProductComparisonItem;
+  comparisonBreakdown?: {
+    platformId: string;
+    platformName: string;
+    logo: string;
+    price: number;
+    etaMinutes: number;
+    savings: number;
+    isBest?: boolean;
+    topsisScore?: number;
+  }[];
+  couponInfo?: {
+    code: string;
+    title: string;
+    discountSummary: string;
+    discountAmount: number;
+  };
+  restaurantInfo?: {
+    id: string;
+    name: string;
+    branchName: string;
+    rating: number;
+    heroOffer: string;
+    featuredDish: string;
+  };
 }
 
 export interface CryptographicProof {
