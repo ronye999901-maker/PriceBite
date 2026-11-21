@@ -84,6 +84,9 @@ export interface PlatformResult {
   appliedBankOffers?: string[];
   isDirectAppOrder?: boolean;
   ingestionMeta?: IngestionMetadata;
+  isOpen?: boolean;
+  operatingHoursText?: string;
+  nextOpeningTime?: string;
 }
 
 export interface ProductComparisonItem {

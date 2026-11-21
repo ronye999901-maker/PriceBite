@@ -1165,6 +1165,94 @@ export function getCleanDishName(dish: string): string {
     .trim();
 }
 
+export interface OperatingStatus {
+  isOpen: boolean;
+  opensAt: string;
+  closesAt: string;
+  statusText: string;
+}
+
+/**
+ * Calculates live restaurant kitchen operational status based on current local time.
+ * Biryani / Mughlai: 12:00 PM to 11:30 PM
+ * Fast Food / QSR: 11:00 AM to 1:00 AM
+ * Cafes & Breakfast: 7:30 AM to 10:30 PM
+ * Late Night Spots: 7:00 PM to 5:00 AM
+ */
+export function getRestaurantOperatingStatus(restaurantName: string, category: string = ''): OperatingStatus {
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const nameLower = restaurantName.toLowerCase();
+  const catLower = category.toLowerCase();
+
+  // Fast food chains (Domino's, Pizza Hut, Burger King, McDonald's, KFC, Subway): 11:00 AM to 1:00 AM
+  if (
+    nameLower.includes('domino') ||
+    nameLower.includes('pizza hut') ||
+    nameLower.includes('burger king') ||
+    nameLower.includes('mcdonald') ||
+    nameLower.includes('kfc') ||
+    nameLower.includes('subway')
+  ) {
+    const openMin = 11 * 60;
+    const closeMin = 1 * 60;
+    const isOpen = currentMinutes >= openMin || currentMinutes < closeMin;
+    return {
+      isOpen,
+      opensAt: '11:00 AM',
+      closesAt: '1:00 AM',
+      statusText: isOpen ? 'Open Now' : 'Opens 11:00 AM',
+    };
+  }
+
+  // Cafes / Breakfast / Bakeries (Starbucks, Chai Point, Flurys, South Indian): 7:30 AM to 10:30 PM
+  if (
+    nameLower.includes('starbucks') ||
+    nameLower.includes('chai') ||
+    nameLower.includes('tea') ||
+    nameLower.includes('flury') ||
+    nameLower.includes('saravana') ||
+    nameLower.includes('dosa') ||
+    catLower.includes('cafe') ||
+    catLower.includes('breakfast')
+  ) {
+    const openMin = 7 * 60 + 30;
+    const closeMin = 22 * 60 + 30;
+    const isOpen = currentMinutes >= openMin && currentMinutes < closeMin;
+    return {
+      isOpen,
+      opensAt: '7:30 AM',
+      closesAt: '10:30 PM',
+      statusText: isOpen ? 'Open Now' : 'Opens 7:30 AM',
+    };
+  }
+
+  // Late night delivery cloud kitchens: 7:00 PM to 5:00 AM
+  if (nameLower.includes('midnight') || nameLower.includes('night') || catLower.includes('late night')) {
+    const openMin = 19 * 60;
+    const closeMin = 5 * 60;
+    const isOpen = currentMinutes >= openMin || currentMinutes < closeMin;
+    return {
+      isOpen,
+      opensAt: '7:00 PM',
+      closesAt: '5:00 AM',
+      statusText: isOpen ? 'Open Now' : 'Opens 7:00 PM',
+    };
+  }
+
+  // Default Authentic Indian Dine-in / Biryani / Mughlai (Arsalan, Aminia, Oudh, etc.): 12:00 PM to 11:30 PM
+  const openMin = 12 * 60;
+  const closeMin = 23 * 60 + 30;
+  const isOpen = currentMinutes >= openMin && currentMinutes < closeMin;
+  return {
+    isOpen,
+    opensAt: '12:00 PM',
+    closesAt: '11:30 PM',
+    statusText: isOpen ? 'Open Now' : 'Opens 12:00 PM',
+  };
+}
+
 // ============================================================================
 // HYPERLOCAL RESOLVER: Returns EVERY restaurant available in the given PIN code!
 // ============================================================================
@@ -1272,6 +1360,7 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
 
   combinedSeeds.forEach((rest, restIdx) => {
     const cleanRestName = getCleanRestaurantBrand(rest.name);
+    const operatingStatus = getRestaurantOperatingStatus(rest.name, rest.category);
     const distanceKm = Number((1.2 + (restIdx * 0.18) % 4.5).toFixed(1));
     const directDeliveryTime = Math.max(12, Math.min(22, 12 + Math.round(distanceKm * 2.2)));
     const aggregatorDeliveryTime = directDeliveryTime + 10 + (restIdx % 8);
@@ -1358,6 +1447,9 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
             isDirectAppOrder: true,
             appliedCoupons: ['PBDIRECT200', 'DIRECT50'],
             appliedBankOffers: ['UPI_CASHBACK'],
+            isOpen: operatingStatus.isOpen,
+            operatingHoursText: operatingStatus.statusText,
+            nextOpeningTime: operatingStatus.opensAt,
             priceBreakdown: {
               basePrice: dishBasePrice,
               discount: pbDiscount,
@@ -1385,6 +1477,9 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
             orderUrl: swiggySearchUrl,
             appliedCoupons: ['SWIGGYIT'],
             appliedBankOffers: ['HDFC_OFF'],
+            isOpen: operatingStatus.isOpen,
+            operatingHoursText: operatingStatus.statusText,
+            nextOpeningTime: operatingStatus.opensAt,
             priceBreakdown: {
               basePrice: dishBasePrice,
               discount: swDiscount,
@@ -1412,6 +1507,9 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
             orderUrl: zomatoSearchUrl,
             appliedCoupons: ['ZOMATOGOLD'],
             appliedBankOffers: ['SBI_DEAL'],
+            isOpen: operatingStatus.isOpen,
+            operatingHoursText: operatingStatus.statusText,
+            nextOpeningTime: operatingStatus.opensAt,
             priceBreakdown: {
               basePrice: dishBasePrice,
               discount: zmDiscount,
@@ -1497,6 +1595,7 @@ export function generateUniversalDishProducts(
 
   selectedSeeds.forEach((rest, restIdx) => {
     const cleanRestName = getCleanRestaurantBrand(rest.name);
+    const operatingStatus = getRestaurantOperatingStatus(rest.name, rest.cuisine);
     const distanceKm = Number((1.2 + ((restIdx * 0.22) % 4.5)).toFixed(1));
     const directDeliveryTime = Math.max(12, Math.min(24, 12 + Math.round(distanceKm * 2.2)));
     const aggregatorDeliveryTime = directDeliveryTime + 10 + (restIdx % 6);
@@ -1579,6 +1678,9 @@ export function generateUniversalDishProducts(
           isDirectAppOrder: true,
           appliedCoupons: ['PBDIRECT200', 'DIRECT50'],
           appliedBankOffers: ['UPI_CASHBACK'],
+          isOpen: operatingStatus.isOpen,
+          operatingHoursText: operatingStatus.statusText,
+          nextOpeningTime: operatingStatus.opensAt,
           priceBreakdown: {
             basePrice: dishBasePrice,
             discount: pbDiscount,
@@ -1606,6 +1708,9 @@ export function generateUniversalDishProducts(
           orderUrl: swiggySearchUrl,
           appliedCoupons: ['SWIGGYIT'],
           appliedBankOffers: ['HDFC_OFF'],
+          isOpen: operatingStatus.isOpen,
+          operatingHoursText: operatingStatus.statusText,
+          nextOpeningTime: operatingStatus.opensAt,
           priceBreakdown: {
             basePrice: dishBasePrice,
             discount: swDiscount,
@@ -1633,6 +1738,9 @@ export function generateUniversalDishProducts(
           orderUrl: zomatoSearchUrl,
           appliedCoupons: ['ZOMATOGOLD'],
           appliedBankOffers: ['SBI_DEAL'],
+          isOpen: operatingStatus.isOpen,
+          operatingHoursText: operatingStatus.statusText,
+          nextOpeningTime: operatingStatus.opensAt,
           priceBreakdown: {
             basePrice: dishBasePrice,
             discount: zmDiscount,

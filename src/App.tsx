@@ -41,7 +41,7 @@ import {
   fetchUserOrdersFromCloud,
   syncPriceAlertToCloud,
 } from './lib/supabase';
-import { MapPin, Smartphone, CheckCircle } from 'lucide-react';
+import { MapPin, Smartphone, CheckCircle, Clock } from 'lucide-react';
 
 export function App() {
   const [currentLang, setCurrentLang] = useState<LanguageCode>('en');
@@ -825,6 +825,25 @@ export function App() {
               </p>
             </div>
 
+            {redirectingPlatform.platform.isOpen === false && (
+              <div className="p-3.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs flex items-start space-x-2.5 text-left">
+                <Clock className="w-4 h-4 flex-shrink-0 text-amber-400 mt-0.5" />
+                <div className="space-y-0.5">
+                  <p className="font-bold text-amber-400">
+                    Kitchen Currently Closed on {redirectingPlatform.platform.platformName}
+                  </p>
+                  <p className="text-slate-300 leading-relaxed text-[11px]">
+                    {redirectingPlatform.restaurantName || 'This restaurant'} delivery on{' '}
+                    {redirectingPlatform.platform.platformName} opens at{' '}
+                    <strong className="text-amber-300 font-bold">
+                      {redirectingPlatform.platform.nextOpeningTime || '12:00 PM'}
+                    </strong>{' '}
+                    today. Live orders cannot be accepted by {redirectingPlatform.platform.platformName} right now.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col space-y-2.5">
               <button
                 onClick={() => handleExecutePlatformRedirect(redirectingPlatform.platform.orderUrl)}
@@ -832,7 +851,9 @@ export function App() {
               >
                 <Smartphone className="w-4 h-4" />
                 <span>
-                  Open {redirectingPlatform.restaurantName || 'Store'} on {redirectingPlatform.platform.platformName} →
+                  {redirectingPlatform.platform.isOpen === false
+                    ? `View ${redirectingPlatform.restaurantName || 'Store'} on ${redirectingPlatform.platform.platformName} anyway →`
+                    : `Open ${redirectingPlatform.restaurantName || 'Store'} on ${redirectingPlatform.platform.platformName} →`}
                 </span>
               </button>
 

@@ -183,9 +183,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <span>{smartPickResult.platformLogo}</span>
                 <span>{smartPickResult.platformName}</span>
               </span>
-              <span className="text-[11px] text-slate-400 font-semibold flex items-center space-x-1">
-                <Clock className="w-3 h-3 text-orange-400" />
-                <span>{smartPickResult.deliveryTimeMinutes}m</span>
+              <span className="text-[11px] font-semibold flex items-center space-x-1">
+                {smartPickResult.isOpen === false ? (
+                  <span className="text-amber-400 font-bold flex items-center space-x-1">
+                    <span>🌙</span>
+                    <span>{smartPickResult.operatingHoursText || 'Closed'}</span>
+                  </span>
+                ) : (
+                  <span className="text-slate-400 flex items-center space-x-1">
+                    <Clock className="w-3 h-3 text-orange-400" />
+                    <span>{smartPickResult.deliveryTimeMinutes}m</span>
+                  </span>
+                )}
               </span>
             </div>
           </div>
@@ -258,11 +267,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
                 <div>
                   <span className="text-lg font-black text-slate-200 block">₹{swiggyPrice}</span>
-                  <span className="text-[10px] text-slate-400 block">+₹6 Platform Fee • {swiggyResult.deliveryTimeMinutes}m</span>
+                  {swiggyResult.isOpen === false ? (
+                    <span className="text-[10px] text-amber-400 font-bold flex items-center space-x-1">
+                      <span>🌙 Kitchen Closed</span>
+                      <span>• {swiggyResult.operatingHoursText || 'Opens 12:00 PM'}</span>
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-400 block">+₹6 Platform Fee • {swiggyResult.deliveryTimeMinutes}m</span>
+                  )}
                 </div>
 
-                <button className="w-full bg-slate-800 hover:bg-slate-700 text-orange-400 font-bold py-1.5 rounded-lg text-xs border border-slate-700">
-                  Order on Swiggy App ↗
+                <button className={`w-full font-bold py-1.5 rounded-lg text-xs border transition-colors ${
+                  swiggyResult.isOpen === false
+                    ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    : 'bg-slate-800 hover:bg-slate-700 text-orange-400 border-slate-700'
+                }`}>
+                  {swiggyResult.isOpen === false ? `Closed • Opens ${swiggyResult.nextOpeningTime || '12:00 PM'} ↗` : 'Order on Swiggy App ↗'}
                 </button>
               </div>
             )}
@@ -283,11 +303,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
                 <div>
                   <span className="text-lg font-black text-slate-200 block">₹{zomatoPrice}</span>
-                  <span className="text-[10px] text-slate-400 block">+₹6 Platform Fee • {zomatoResult.deliveryTimeMinutes}m</span>
+                  {zomatoResult.isOpen === false ? (
+                    <span className="text-[10px] text-amber-400 font-bold flex items-center space-x-1">
+                      <span>🌙 Kitchen Closed</span>
+                      <span>• {zomatoResult.operatingHoursText || 'Opens 12:00 PM'}</span>
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-400 block">+₹6 Platform Fee • {zomatoResult.deliveryTimeMinutes}m</span>
+                  )}
                 </div>
 
-                <button className="w-full bg-slate-800 hover:bg-slate-700 text-red-400 font-bold py-1.5 rounded-lg text-xs border border-slate-700">
-                  Order on Zomato App ↗
+                <button className={`w-full font-bold py-1.5 rounded-lg text-xs border transition-colors ${
+                  zomatoResult.isOpen === false
+                    ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    : 'bg-slate-800 hover:bg-slate-700 text-red-400 border-slate-700'
+                }`}>
+                  {zomatoResult.isOpen === false ? `Closed • Opens ${zomatoResult.nextOpeningTime || '12:00 PM'} ↗` : 'Order on Zomato App ↗'}
                 </button>
               </div>
             )}
