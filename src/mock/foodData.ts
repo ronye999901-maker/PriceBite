@@ -190,6 +190,30 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
       offer2: 'Flat 15% Off on Zomato Gold',
       featuredDishes: ['Original Chocolate Rum Ball', 'Full English Breakfast Plate', 'Mushroom Quiche'],
     },
+    {
+      name: 'Banana Leaf Authentic South Indian (Southern Avenue)',
+      cuisine: 'South Indian, Thatte Idli, Ghee Podi Dosa, Filter Coffee, Sambar Vada',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 260,
+      category: 'South Indian',
+      offer1: 'Thatte Idli & Dosa Combo ₹149 on Direct',
+      offer2: 'Free Filter Coffee on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Ghee Sambar Thatte Idli (2 Pcs)', 'Butter Masala Dosa', 'Crispy Medu Vada with Coconut Chutney'],
+    },
+    {
+      name: 'Jyoti Vihar Heritage South Indian (Park Street)',
+      cuisine: 'Pure Veg South Indian, Steamed Rice Idli, Mysore Masala Dosa, Upma',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 220,
+      category: 'South Indian',
+      offer1: 'Steamed Idli Duo ₹110 on Direct',
+      offer2: 'Flat 10% Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Steamed Rice Idli with Sambar', 'Mysore Masala Dosa', 'Traditional Filter Coffee'],
+    },
   ],
 
   midnapore: [
@@ -258,6 +282,18 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
       offer1: 'Regular Pizza Combo ₹199 on Direct',
       offer2: 'Flat ₹80 Off on Swiggy',
       featuredDishes: ['Farmhouse Pizza', 'Peppy Paneer Pizza', 'Garlic Breadsticks'],
+    },
+    {
+      name: 'Madras Tiffin & Dosa Hub (Medinipur)',
+      cuisine: 'South Indian, Steamed Idli, Ghee Masala Dosa, Medu Vada, Filter Coffee',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.7,
+      cost: 210,
+      category: 'South Indian',
+      offer1: 'Steamed Idli Duo ₹99 on Direct',
+      offer2: 'Flat ₹30 Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Steamed Rice Idli Sambar (2 Pcs)', 'Crispy Ghee Masala Dosa', 'Medu Vada Duo'],
     },
   ],
 
@@ -1280,8 +1316,20 @@ export const RESTAURANT_DIRECT_STORE_URLS: Record<string, { swiggy: string; zoma
     swiggy: 'https://www.swiggy.com/city/medinipur',
     zomato: 'https://www.zomato.com/search?q=The+Taste+of+Mednipore',
   },
+  'madras tiffin': {
+    swiggy: 'https://www.swiggy.com/search?query=Madras+Tiffin+Dosa+Medinipur',
+    zomato: 'https://www.zomato.com/search?q=Madras+Tiffin+Dosa+Medinipur',
+  },
 
   // Eastern India / Kolkata Legends
+  'banana leaf': {
+    swiggy: 'https://www.swiggy.com/restaurants/banana-leaf-lake-market-kalighat-kolkata-10270',
+    zomato: 'https://www.zomato.com/kolkata/banana-leaf-lake-market/order',
+  },
+  'jyoti vihar': {
+    swiggy: 'https://www.swiggy.com/restaurants/jyoti-vihar-camac-street-area-kolkata-10275',
+    zomato: 'https://www.zomato.com/kolkata/jyoti-vihar-camac-street-area/order',
+  },
   'arsalan': {
     swiggy: 'https://www.swiggy.com/restaurants/arsalan-restaurant-circus-avenue-park-circus-area-kolkata-10144',
     zomato: 'https://www.zomato.com/kolkata/arsalan-park-circus-area/order',
@@ -1925,6 +1973,186 @@ export function normalizeFoodQuery(query: string): string {
 }
 
 /**
+ * Strict Cuisine & Category Matcher:
+ * Ensures dishes are ONLY assigned to restaurants that actually serve that cuisine!
+ * e.g. "Idli" will NEVER match Arsalan, Domino's, or KFC.
+ */
+export function isRestaurantCuisineCompatible(
+  dishQuery: string,
+  restaurant: RestaurantSeed
+): boolean {
+  const q = dishQuery.toLowerCase().trim();
+  const restText = `${restaurant.name} ${restaurant.cuisine} ${restaurant.category} ${(restaurant.featuredDishes || []).join(' ')}`.toLowerCase();
+
+  // 1. Direct match: if the restaurant's cuisine or featured dishes explicitly contain the dish query
+  if (restText.includes(q)) return true;
+
+  // 2. South Indian: idli, dosa, vada, uttapam, upma, pongal, sambar, appam
+  const isSouthIndianDish =
+    q.includes('idli') ||
+    q.includes('dosa') ||
+    q.includes('vada') ||
+    q.includes('wada') ||
+    q.includes('uttapam') ||
+    q.includes('upma') ||
+    q.includes('pongal') ||
+    q.includes('sambar') ||
+    q.includes('appam');
+
+  if (isSouthIndianDish) {
+    return (
+      restText.includes('south indian') ||
+      restText.includes('dosa') ||
+      restText.includes('idli') ||
+      restText.includes('vada') ||
+      restText.includes('udupi') ||
+      restText.includes('tiffin') ||
+      restText.includes('rameshwaram') ||
+      restText.includes('saravana') ||
+      restText.includes('murugan') ||
+      restText.includes('vidyarthi') ||
+      restText.includes('ctr') ||
+      restText.includes('banana leaf') ||
+      restText.includes('jyoti vihar')
+    );
+  }
+
+  // 3. Pizza & Italian: pizza, pasta, garlic bread, calzone, lasagna
+  const isPizzaItalianDish =
+    q.includes('pizza') ||
+    q.includes('pasta') ||
+    q.includes('garlic bread') ||
+    q.includes('calzone') ||
+    q.includes('lasagna');
+
+  if (isPizzaItalianDish) {
+    return (
+      restText.includes('pizza') ||
+      restText.includes('italian') ||
+      restText.includes('domino') ||
+      restText.includes('pizza hut') ||
+      restText.includes('continental') ||
+      restText.includes('cafe')
+    );
+  }
+
+  // 4. Burgers & American Fast Food: burger, whopper, fries, nuggets
+  const isBurgerDish =
+    q.includes('burger') ||
+    q.includes('whopper') ||
+    q.includes('fries') ||
+    q.includes('nuggets');
+
+  if (isBurgerDish) {
+    return (
+      restText.includes('burger') ||
+      restText.includes('whopper') ||
+      restText.includes('mcdonald') ||
+      restText.includes('burger king') ||
+      restText.includes('kfc') ||
+      restText.includes('truffles') ||
+      restText.includes('fast food')
+    );
+  }
+
+  // 5. Biryani & Mughlai: biryani, chaap, rezala, korma, nihari, pasanda, galauti, seekh kebab
+  const isBiryaniMughlaiDish =
+    q.includes('biryani') ||
+    q.includes('chaap') ||
+    q.includes('rezala') ||
+    q.includes('korma') ||
+    q.includes('nihari') ||
+    q.includes('pasanda') ||
+    q.includes('galauti') ||
+    q.includes('kebab');
+
+  if (isBiryaniMughlaiDish) {
+    return (
+      restText.includes('biryani') ||
+      restText.includes('mughlai') ||
+      restText.includes('awadhi') ||
+      restText.includes('tandoori') ||
+      restText.includes('kebab') ||
+      restText.includes('dhaba') ||
+      restText.includes('north indian')
+    );
+  }
+
+  // 6. Rolls & Wraps: roll, rolls, kathi, kati, wrap, frankie, shawarma
+  const isRollDish =
+    q.includes('roll') ||
+    q.includes('kathi') ||
+    q.includes('kati') ||
+    q.includes('wrap') ||
+    q.includes('frankie') ||
+    q.includes('shawarma');
+
+  if (isRollDish) {
+    return (
+      restText.includes('roll') ||
+      restText.includes('kathi') ||
+      restText.includes('kati') ||
+      restText.includes('wrap') ||
+      restText.includes('fast food') ||
+      restText.includes('snacks') ||
+      restText.includes('mughlai') ||
+      restText.includes('biryani')
+    );
+  }
+
+  // 7. Chinese & Momos: momo, dimsum, chowmein, noodles, manchurian, fried rice
+  const isChineseMomoDish =
+    q.includes('momo') ||
+    q.includes('dimsum') ||
+    q.includes('chowmein') ||
+    q.includes('noodles') ||
+    q.includes('manchurian');
+
+  if (isChineseMomoDish) {
+    return (
+      restText.includes('chinese') ||
+      restText.includes('asian') ||
+      restText.includes('momo') ||
+      restText.includes('dimsum') ||
+      restText.includes('noodles')
+    );
+  }
+
+  // 8. Desserts & Sweets: sweet, mishti, sandesh, rosogolla, rasgulla, cake, pastry, ice cream, jalebi
+  const isSweetDessertDish =
+    q.includes('sweet') ||
+    q.includes('mishti') ||
+    q.includes('sandesh') ||
+    q.includes('rosogolla') ||
+    q.includes('rasgulla') ||
+    q.includes('cake') ||
+    q.includes('pastry') ||
+    q.includes('ice cream') ||
+    q.includes('jalebi') ||
+    q.includes('dessert');
+
+  if (isSweetDessertDish) {
+    return (
+      restText.includes('sweet') ||
+      restText.includes('dessert') ||
+      restText.includes('mishti') ||
+      restText.includes('bakery') ||
+      restText.includes('cake') ||
+      restText.includes('ice cream') ||
+      restText.includes('haldiram') ||
+      restText.includes('bikanervala') ||
+      restText.includes('balaram') ||
+      restText.includes('flury')
+    );
+  }
+
+  // If specific cuisine not identified, default to general compatibility
+  const isMeat = q.includes('chicken') || q.includes('mutton') || q.includes('fish') || q.includes('meat');
+  if (isMeat && restaurant.isPureVeg) return false;
+  return true;
+}
+
+/**
  * Universal Dynamic Food Search:
  * For ANY dish or food query entered by the user, dynamically generates live multi-restaurant
  * comparison cards across all local & national restaurants in the active PIN code.
@@ -1968,11 +2196,24 @@ export function generateUniversalDishProducts(
     lowerQ.includes('egg') ||
     lowerQ.includes('shawarma');
 
-  // Filter restaurants: if meat, exclude pure veg dining spots
-  const eligibleSeeds = combinedSeeds.filter((rest) => {
-    if (isMeatDish && rest.isPureVeg) return false;
-    return true;
+  // Strict Cuisine Compatibility Filter:
+  // Only restaurants whose cuisine actually matches the searched dish are eligible!
+  // e.g. "Idli" will NEVER match Arsalan, Domino's, or KFC!
+  let eligibleSeeds = combinedSeeds.filter((rest) => {
+    return isRestaurantCuisineCompatible(lowerQ, rest);
   });
+
+  // Fallback: If no local restaurants in this specific PIN serve this cuisine,
+  // fetch top regional restaurants across India that specialize in it (e.g. Saravana Bhavan, Rameshwaram Cafe)
+  if (eligibleSeeds.length === 0) {
+    const allNationalAndRegional: (RestaurantSeed & { isLocalLegend: boolean })[] = [
+      ...Object.values(ZONE_RESTAURANTS).flat().map((r) => ({ ...r, isLocalLegend: true })),
+      ...NATIONWIDE_QSR_CHAINS.map((r) => ({ ...r, isLocalLegend: false })),
+    ];
+    eligibleSeeds = allNationalAndRegional.filter((rest) =>
+      isRestaurantCuisineCompatible(lowerQ, rest)
+    );
+  }
 
   // Prioritize restaurants that actually specialize in or feature this dish on their menu
   eligibleSeeds.sort((a, b) => {
