@@ -194,71 +194,70 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
 
   midnapore: [
     {
-      name: 'Midnapore Heritage Town Hotel',
-      cuisine: 'Bengali Thali, Posto Bora, Mutton Kasha, Katla Jhol',
-      img: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&auto=format&fit=crop&q=80',
-      rating: 4.8,
-      cost: 290,
-      category: 'Bengali / Regional',
-      offer1: 'Posto Bora & Mutton Thali ₹220 Direct',
-      offer2: 'Free Mishti on Swiggy Delivery',
-      featuredDishes: ['Aloo Posto with Posto Bora', 'Midnapore Desi Mutton Kasha', 'Katla Kalia'],
-    },
-    {
-      name: 'Kharagpur Golbazar Biryani House',
-      cuisine: 'Kolkata Style Dum Biryani, Chicken Chaap, Kebabs',
+      name: 'Biriyani Mahal (Keranitola)',
+      cuisine: 'Kolkata Dum Biryani, Egg Chicken Rolls, Tandoori',
       img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
-      rating: 4.7,
+      rating: 4.8,
       cost: 320,
       category: 'Biryani & Mughlai',
-      offer1: 'Special Chicken Dum Biryani ₹180 on Direct',
-      offer2: 'Flat ₹60 Off on Zomato',
-      featuredDishes: ['Chicken Dum Biryani with Aloo & Egg', 'Chicken Chaap', 'Tandoori Roti'],
+      offer1: 'Special Chicken Biryani ₹199 on Direct',
+      offer2: 'Flat ₹50 Off on Swiggy',
+      featuredDishes: ['Egg Chicken Kati Roll', 'Special Chicken Dum Biryani', 'Double Egg Roll', 'Chicken Chaap'],
     },
     {
-      name: 'Vidyasagar Canteen & Thali Hub',
-      cuisine: 'Homestyle Student & Family Thali, Fish Curry',
+      name: 'New Dada Boudi Biryani (Medinipur)',
+      cuisine: 'Mutton Dum Biryani, Chicken Chaap, Mughlai Rolls',
+      img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 360,
+      category: 'Biryani & Mughlai',
+      offer1: 'Mutton Biryani Combo ₹280 on Direct',
+      offer2: 'Free Salad & Raita on Swiggy',
+      featuredDishes: ['Chicken Biryani with Aloo & Egg', 'Egg Chicken Roll', 'Special Mutton Biryani'],
+    },
+    {
+      name: 'Kathi Roll Corner (Medinipur)',
+      cuisine: 'Kati Rolls, Double Egg Roll, Paneer Roll, Chowmein',
+      img: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=800&auto=format&fit=crop&q=80',
+      rating: 4.7,
+      cost: 160,
+      category: 'Fast Food & Snacks',
+      offer1: 'Double Egg Chicken Roll ₹110 on Direct',
+      offer2: 'Flat 10% Off on Swiggy',
+      featuredDishes: ['Double Egg Chicken Roll', 'Paneer Kathi Roll', 'Egg Roll Special'],
+    },
+    {
+      name: 'Samrat Restaurant (Medinipur)',
+      cuisine: 'Bengali Thali, Fish Curry, Chicken Kasha, Chinese',
       img: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&auto=format&fit=crop&q=80',
       rating: 4.6,
-      cost: 210,
+      cost: 260,
       category: 'Bengali / Regional',
-      offer1: 'Executive Fish Meal ₹140 on Direct Pay',
-      offer2: 'Flat 10% Off on Swiggy',
-      featuredDishes: ['Rui Macher Jhol Thali', 'Special Egg Curry Rice', 'Moong Dal with Jhuri Aloo Bhaja'],
+      offer1: 'Executive Thali ₹160 on Direct',
+      offer2: 'Flat ₹40 Off on Swiggy',
+      featuredDishes: ['Fish Thali with Katla Kalia', 'Chicken Kasha with Roti', 'Chilli Chicken'],
     },
     {
-      name: 'Rangamati Highway Express Dhaba',
-      cuisine: 'Tadka Roti, Butter Chicken, Paneer Bhurji',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.6,
-      cost: 280,
-      category: 'North Indian & Dhaba',
-      offer1: 'Egg Tadka & Tandoori Roti Combo ₹110',
-      offer2: 'Free Extra Tadka on Swiggy',
-      featuredDishes: ['Dhaba Egg Tadka Special', 'Kadai Chicken', 'Butter Tandoori Roti'],
-    },
-    {
-      name: 'Chowman Express Midnapore',
-      cuisine: 'Chinese, Asian, Hakka Noodles, Crispy Chicken',
-      img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=800&auto=format&fit=crop&q=80',
+      name: 'The Taste of Mednipore',
+      cuisine: 'Traditional Bengali, Posto Bora, Desi Mutton Kasha',
+      img: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&auto=format&fit=crop&q=80',
       rating: 4.7,
-      cost: 350,
-      category: 'Chinese & Asian',
-      offer1: 'Meal for Two ₹299 Direct Store',
-      offer2: 'Flat ₹80 Off on Zomato',
-      featuredDishes: ['Chilli Chicken Dry', 'Chicken Hakka Noodles', 'Crispy Honey Chilli Potatoes'],
+      cost: 290,
+      category: 'Bengali / Regional',
+      offer1: 'Desi Mutton Meal ₹240 on Direct',
+      offer2: 'Free Mishti on Swiggy',
+      featuredDishes: ['Midnapore Desi Mutton Kasha', 'Aloo Posto with Posto Bora', 'Katla Macher Jhol'],
     },
     {
-      name: 'Midnapore Mishti & Sweets Hub',
-      cuisine: 'Lyangcha, Chanar Payesh, Rosogolla, Mishti Doi',
-      img: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=800&auto=format&fit=crop&q=80',
-      rating: 4.9,
-      cost: 180,
-      category: 'Desserts & Sweets',
-      offer1: 'Fresh Rosogolla Box ₹120 on Direct',
-      offer2: 'Flat ₹30 Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Garam Rosogolla (6 Pcs)', 'Special Chanar Payesh', 'Red Mishti Doi Matka'],
+      name: "Domino's Pizza (Khaprail Bazar, Medinipur)",
+      cuisine: 'Pizzas, Garlic Bread, Pasta, Desserts',
+      img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 350,
+      category: 'Pizza & Fast Food',
+      offer1: 'Regular Pizza Combo ₹199 on Direct',
+      offer2: 'Flat ₹80 Off on Swiggy',
+      featuredDishes: ['Farmhouse Pizza', 'Peppy Paneer Pizza', 'Garlic Breadsticks'],
     },
   ],
 
@@ -1260,6 +1259,28 @@ export function getRestaurantOperatingStatus(restaurantName: string, category: s
  * the customer straight inside that restaurant's official menu to place the order.
  */
 export const RESTAURANT_DIRECT_STORE_URLS: Record<string, { swiggy: string; zomato: string }> = {
+  // Paschim Medinipur / Midnapore Legends (Real Swiggy Stores)
+  'biriyani mahal': {
+    swiggy: 'https://www.swiggy.com/city/medinipur',
+    zomato: 'https://www.zomato.com/search?q=Biriyani+Mahal+Medinipur',
+  },
+  'new dada boudi': {
+    swiggy: 'https://www.swiggy.com/city/medinipur',
+    zomato: 'https://www.zomato.com/search?q=New+Dada+Boudi+Biryani+Medinipur',
+  },
+  'kathi roll corner': {
+    swiggy: 'https://www.swiggy.com/city/medinipur',
+    zomato: 'https://www.zomato.com/search?q=Kathi+Roll+Corner+Medinipur',
+  },
+  'samrat restaurant': {
+    swiggy: 'https://www.swiggy.com/city/medinipur',
+    zomato: 'https://www.zomato.com/search?q=Samrat+Restaurant+Medinipur',
+  },
+  'the taste of mednipore': {
+    swiggy: 'https://www.swiggy.com/city/medinipur',
+    zomato: 'https://www.zomato.com/search?q=The+Taste+of+Mednipore',
+  },
+
   // Eastern India / Kolkata Legends
   'arsalan': {
     swiggy: 'https://www.swiggy.com/restaurants/arsalan-restaurant-circus-avenue-park-circus-area-kolkata-10144',
@@ -1514,26 +1535,87 @@ export const RESTAURANT_DIRECT_STORE_URLS: Record<string, { swiggy: string; zoma
 };
 
 /**
- * Resolves the verified direct storefront link for Swiggy and Zomato.
+ * Resolves standard Swiggy city slugs across all Indian states & PIN codes.
+ */
+export function getSwiggyCitySlug(districtOrCity: string, pinCode?: string): string {
+  const d = (districtOrCity || '').toLowerCase();
+  const p = (pinCode || '').trim();
+
+  if (p.startsWith('721') || d.includes('medinipur') || d.includes('midnapore')) return 'medinipur';
+  if (p.startsWith('700') || p.startsWith('711') || d.includes('kolkata') || d.includes('howrah')) return 'kolkata';
+  if (p.startsWith('560') || d.includes('bengaluru') || d.includes('bangalore')) return 'bangalore';
+  if (p.startsWith('110') || d.includes('delhi')) return 'delhi';
+  if (p.startsWith('400') || d.includes('mumbai') || d.includes('thane')) return 'mumbai';
+  if (p.startsWith('411') || d.includes('pune')) return 'pune';
+  if (p.startsWith('500') || d.includes('hyderabad')) return 'hyderabad';
+  if (p.startsWith('600') || d.includes('chennai')) return 'chennai';
+  if (p.startsWith('380') || d.includes('ahmedabad')) return 'ahmedabad';
+  if (d.includes('kharagpur')) return 'kharagpur';
+  if (d.includes('siliguri') || p.startsWith('734')) return 'siliguri';
+  if (d.includes('durgapur') || p.startsWith('713')) return 'durgapur';
+  if (d.includes('asansol')) return 'asansol';
+  if (d.includes('bhubaneswar') || p.startsWith('751')) return 'bhubaneswar';
+  if (d.includes('patna') || p.startsWith('800')) return 'patna';
+  if (d.includes('jaipur') || p.startsWith('302')) return 'jaipur';
+  if (d.includes('lucknow') || p.startsWith('226')) return 'lucknow';
+  if (d.includes('chandigarh') || p.startsWith('160')) return 'chandigarh';
+  if (d.includes('kochi') || p.startsWith('682')) return 'kochi';
+  if (d.includes('indore') || p.startsWith('452')) return 'indore';
+  if (d.includes('guwahati') || p.startsWith('781')) return 'guwahati';
+
+  return d.replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'india';
+}
+
+/**
+ * Resolves the verified direct storefront link for Swiggy and Zomato across ALL PIN codes in India.
  * If mapped, opens that restaurant's storefront directly inside Swiggy/Zomato.
- * If not specifically mapped, searches that exact restaurant name so the platform prioritizes this outlet.
+ * If national chain (Domino's, KFC, etc.), routes directly to that city's local outlet.
+ * Otherwise, searches that exact restaurant name localized to the user's PIN code and city.
  */
 export function getDirectRestaurantStoreUrl(
   restaurantName: string,
   platform: 'swiggy' | 'zomato',
-  dishQuery?: string
+  dishQuery?: string,
+  pin?: PINCodeDetails | null
 ): string {
   const clean = restaurantName.toLowerCase().replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
+  const zoneInfo = getGeographicZone(pin || null);
+  const city = pin?.district || zoneInfo.majorCity || '';
+  const area = pin?.area || '';
+  const brandName = getCleanRestaurantBrand(restaurantName);
+  const citySlug = getSwiggyCitySlug(city, pin?.pinCode);
+
+  // 1. National QSR Chains (Domino's, KFC, Burger King, Pizza Hut, Subway, Wow! Momo, etc.)
+  // Localized dynamically to the user's exact PIN code city/area so it never opens another city's outlet!
+  const isNationalChain =
+    clean.includes('domino') ||
+    clean.includes('kfc') ||
+    clean.includes('burger king') ||
+    clean.includes('pizza hut') ||
+    clean.includes('subway') ||
+    clean.includes('mcdonald') ||
+    clean.includes('wow! momo') ||
+    clean.includes('behrouz') ||
+    clean.includes('faasos');
+
+  if (isNationalChain) {
+    const loc = citySlug || city || area;
+    const targetQuery = `${brandName} ${loc}`.trim();
+    return platform === 'swiggy'
+      ? `https://www.swiggy.com/search?query=${encodeURIComponent(targetQuery)}`
+      : `https://www.zomato.com/search?q=${encodeURIComponent(targetQuery)}`;
+  }
+
+  // 2. Check exact mapped URLs in RESTAURANT_DIRECT_STORE_URLS
   for (const [key, urls] of Object.entries(RESTAURANT_DIRECT_STORE_URLS)) {
     if (clean.includes(key) || key.includes(clean)) {
       return platform === 'swiggy' ? urls.swiggy : urls.zomato;
     }
   }
 
-  // Safe fallback: search by the restaurant brand name to land on that restaurant's storefront
-  const brandName = getCleanRestaurantBrand(restaurantName);
-  const targetTerm = brandName.length > 2 ? brandName : (dishQuery || restaurantName);
-  const encoded = encodeURIComponent(targetTerm);
+  // 3. Dynamic Location Search for ANY other restaurant across all PIN codes in India
+  const targetQuery = `${brandName} ${citySlug || city}`.trim();
+  const encoded = encodeURIComponent(targetQuery);
   return platform === 'swiggy'
     ? `https://www.swiggy.com/search?query=${encoded}`
     : `https://www.zomato.com/search?q=${encoded}`;
@@ -1679,9 +1761,9 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
 
       const cleanDish = getCleanDishName(dish);
 
-      // 🌟 DIRECT RESTAURANT STORE LINK ON SWIGGY & ZOMATO (Opens exact restaurant menu; 0 competitor ads)
-      const swiggyStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'swiggy', cleanDish);
-      const zomatoStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'zomato', cleanDish);
+      // 🌟 DIRECT RESTAURANT STORE LINK ON SWIGGY & ZOMATO (Opens exact restaurant in user's PIN/city)
+      const swiggyStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'swiggy', cleanDish, pin);
+      const zomatoStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'zomato', cleanDish, pin);
 
       // PriceBite Direct prices (always lowest with 0% extra commissions)
       const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1825,6 +1907,24 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
 }
 
 /**
+ * Normalizes common food search typos so queries like "rools" or "biriyani" match correctly.
+ */
+export function normalizeFoodQuery(query: string): string {
+  let q = query.toLowerCase().trim();
+  q = q.replace(/\brools?\b/gi, 'rolls');
+  q = q.replace(/\brols?\b/gi, 'rolls');
+  q = q.replace(/\bbiryani?\b/gi, 'biryani');
+  q = q.replace(/\bbiriyani\b/gi, 'biryani');
+  q = q.replace(/\bmomoz\b/gi, 'momos');
+  q = q.replace(/\bpiza\b/gi, 'pizza');
+  q = q.replace(/\bpizzaa\b/gi, 'pizza');
+  q = q.replace(/\bburgr\b/gi, 'burger');
+  q = q.replace(/\bchiken\b/gi, 'chicken');
+  q = q.replace(/\bmuton\b/gi, 'mutton');
+  return q;
+}
+
+/**
  * Universal Dynamic Food Search:
  * For ANY dish or food query entered by the user, dynamically generates live multi-restaurant
  * comparison cards across all local & national restaurants in the active PIN code.
@@ -1835,7 +1935,8 @@ export function generateUniversalDishProducts(
   pin: PINCodeDetails | null
 ): ProductComparisonItem[] {
   if (!query || query.trim().length === 0) return [];
-  const cleanQuery = query.trim();
+  const normalizedQuery = normalizeFoodQuery(query);
+  const cleanQuery = normalizedQuery.trim();
   const lowerQ = cleanQuery.toLowerCase();
 
   const zoneInfo = getGeographicZone(pin);
@@ -1848,7 +1949,7 @@ export function generateUniversalDishProducts(
     ...NATIONWIDE_QSR_CHAINS.map((s) => ({ ...s, isLocalLegend: false })),
   ];
 
-  // Capitalize query words properly (e.g. "butter chicken" -> "Butter Chicken")
+  // Capitalize query words properly (e.g. "rolls" -> "Rolls")
   const formattedDishName = cleanQuery
     .split(' ')
     .filter(Boolean)
@@ -1871,6 +1972,19 @@ export function generateUniversalDishProducts(
   const eligibleSeeds = combinedSeeds.filter((rest) => {
     if (isMeatDish && rest.isPureVeg) return false;
     return true;
+  });
+
+  // Prioritize restaurants that actually specialize in or feature this dish on their menu
+  eligibleSeeds.sort((a, b) => {
+    const aHas = a.featuredDishes.some(
+      (d) => d.toLowerCase().includes(lowerQ) || (lowerQ.length > 3 && d.toLowerCase().includes(lowerQ.slice(0, -1)))
+    );
+    const bHas = b.featuredDishes.some(
+      (d) => d.toLowerCase().includes(lowerQ) || (lowerQ.length > 3 && d.toLowerCase().includes(lowerQ.slice(0, -1)))
+    );
+    if (aHas && !bHas) return -1;
+    if (!aHas && bHas) return 1;
+    return 0;
   });
 
   // Take top 8-10 restaurants in this postal zone
@@ -1907,11 +2021,18 @@ export function generateUniversalDishProducts(
       lowerQ.includes('chai') ||
       lowerQ.includes('pasta'));
 
-    const cleanDish = getCleanDishName(formattedDishName);
+    // Find if this restaurant has an authentic featured dish matching the query
+    const matchingFeatured = rest.featuredDishes.find((fd) => {
+      const lowerFd = fd.toLowerCase();
+      return lowerFd.includes(lowerQ) || (lowerQ.length > 3 && lowerFd.includes(lowerQ.slice(0, -1)));
+    });
 
-    // 🌟 DIRECT RESTAURANT STORE LINK ON SWIGGY & ZOMATO (Opens exact restaurant menu; 0 competitor ads)
-    const swiggyStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'swiggy', cleanDish);
-    const zomatoStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'zomato', cleanDish);
+    const activeDishName = matchingFeatured || formattedDishName;
+    const cleanDish = getCleanDishName(activeDishName);
+
+    // 🌟 DIRECT RESTAURANT STORE LINK ON SWIGGY & ZOMATO (Opens exact restaurant in user's PIN/city)
+    const swiggyStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'swiggy', cleanDish, pin);
+    const zomatoStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'zomato', cleanDish, pin);
 
     // PriceBite Direct prices (always lowest with 0% extra commissions)
     const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1939,7 +2060,7 @@ export function generateUniversalDishProducts(
 
     products.push({
       id: `universal-${zoneInfo.zoneId}-${restIdx}-${lowerQ.replace(/[^a-z0-9]/g, '')}`,
-      name: `${formattedDishName} - ${cleanRestName}`,
+      name: `${activeDishName} - ${cleanRestName}`,
       category: 'food',
       restaurantOrBrand: cleanRestName,
       quantity: '1 Standard Portion (Serves 1-2)',
