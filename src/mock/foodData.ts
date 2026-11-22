@@ -1392,11 +1392,10 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
         lowerDish.includes('mishti');
 
       const cleanDish = getCleanDishName(dish);
-      const searchPhrase = `${cleanRestName} ${cleanDish}`;
 
-      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC DISH ON SWIGGY & ZOMATO
-      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(searchPhrase)}`;
-      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(searchPhrase)}`;
+      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC DISH ON SWIGGY & ZOMATO (Forces Dishes Tab + ADD Button)
+      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanDish)}`;
+      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanDish)}`;
 
       // PriceBite Direct prices (always lowest with 0% extra commissions)
       const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1623,11 +1622,10 @@ export function generateUniversalDishProducts(
       lowerQ.includes('pasta'));
 
     const cleanDish = getCleanDishName(formattedDishName);
-    const searchPhrase = `${cleanRestName} ${cleanDish}`;
 
-    // Deep-links directly to this specific restaurant & dish on Swiggy & Zomato
-    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(searchPhrase)}`;
-    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(searchPhrase)}`;
+    // Deep-links directly to this specific dish on Swiggy & Zomato (Forces Dishes Tab + ADD Button)
+    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanDish)}`;
+    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanDish)}`;
 
     // PriceBite Direct prices (always lowest with 0% extra commissions)
     const pbDiscount = Math.round(dishBasePrice * 0.22);

@@ -852,8 +852,8 @@ export function App() {
                 <Smartphone className="w-4 h-4" />
                 <span>
                   {redirectingPlatform.platform.isOpen === false
-                    ? `View ${redirectingPlatform.restaurantName || 'Store'} on ${redirectingPlatform.platform.platformName} anyway →`
-                    : `Open ${redirectingPlatform.restaurantName || 'Store'} on ${redirectingPlatform.platform.platformName} →`}
+                    ? `View Dish on ${redirectingPlatform.platform.platformName} anyway →`
+                    : `Open Dish on ${redirectingPlatform.platform.platformName} →`}
                 </span>
               </button>
 
