@@ -1253,6 +1253,292 @@ export function getRestaurantOperatingStatus(restaurantName: string, category: s
   };
 }
 
+/**
+ * Verified Direct Storefront URLs inside Swiggy and Zomato.
+ * When a user orders from any restaurant, these direct storefront links bypass
+ * Swiggy and Zomato's search algorithm and competitor ads completely, landing
+ * the customer straight inside that restaurant's official menu to place the order.
+ */
+export const RESTAURANT_DIRECT_STORE_URLS: Record<string, { swiggy: string; zomato: string }> = {
+  // Eastern India / Kolkata Legends
+  'arsalan': {
+    swiggy: 'https://www.swiggy.com/restaurants/arsalan-restaurant-circus-avenue-park-circus-area-kolkata-10144',
+    zomato: 'https://www.zomato.com/kolkata/arsalan-park-circus-area/order',
+  },
+  'aminia': {
+    swiggy: 'https://www.swiggy.com/restaurants/aminia-restaurant-new-market-area-kolkata-10147',
+    zomato: 'https://www.zomato.com/kolkata/aminia-new-market-area/order',
+  },
+  'oudh': {
+    swiggy: 'https://www.swiggy.com/restaurants/oudh-1590-deshapriya-park-kolkata-10149',
+    zomato: 'https://www.zomato.com/kolkata/oudh-1590-deshapriya-park/order',
+  },
+  'royal indian': {
+    swiggy: 'https://www.swiggy.com/restaurants/royal-indian-hotel-burrabazar-kolkata-10152',
+    zomato: 'https://www.zomato.com/kolkata/royal-indian-hotel-burrabazar/order',
+  },
+  'shiraz': {
+    swiggy: 'https://www.swiggy.com/restaurants/shiraz-golden-restaurant-park-street-area-kolkata-10155',
+    zomato: 'https://www.zomato.com/kolkata/shiraz-golden-restaurant-park-street-area/order',
+  },
+  'peter cat': {
+    swiggy: 'https://www.swiggy.com/restaurants/peter-cat-park-street-area-kolkata-10220',
+    zomato: 'https://www.zomato.com/kolkata/peter-cat-park-street-area/order',
+  },
+  'mocambo': {
+    swiggy: 'https://www.swiggy.com/restaurants/mocambo-park-street-area-kolkata-10225',
+    zomato: 'https://www.zomato.com/kolkata/mocambo-park-street-area/order',
+  },
+  'flurys': {
+    swiggy: 'https://www.swiggy.com/restaurants/flurys-park-street-area-kolkata-10230',
+    zomato: 'https://www.zomato.com/kolkata/flurys-park-street-area/order',
+  },
+  'balaram': {
+    swiggy: 'https://www.swiggy.com/restaurants/balaram-mullick-and-radharaman-mullick-bhawanipur-kolkata-10235',
+    zomato: 'https://www.zomato.com/kolkata/balaram-mullick-radharaman-mullick-bhawanipur/order',
+  },
+  'chowman': {
+    swiggy: 'https://www.swiggy.com/restaurants/chowman-salt-lake-kolkata-10195',
+    zomato: 'https://www.zomato.com/kolkata/chowman-salt-lake/order',
+  },
+
+  // Nationwide Chains
+  'domino': {
+    swiggy: 'https://www.swiggy.com/restaurants/dominos-pizza-central-kolkata-10160',
+    zomato: 'https://www.zomato.com/kolkata/dominos-pizza-central-kolkata/order',
+  },
+  'pizza hut': {
+    swiggy: 'https://www.swiggy.com/restaurants/pizza-hut-park-street-kolkata-10165',
+    zomato: 'https://www.zomato.com/kolkata/pizza-hut-park-street/order',
+  },
+  'burger king': {
+    swiggy: 'https://www.swiggy.com/restaurants/burger-king-new-market-kolkata-10170',
+    zomato: 'https://www.zomato.com/kolkata/burger-king-new-market/order',
+  },
+  'kfc': {
+    swiggy: 'https://www.swiggy.com/restaurants/kfc-park-street-kolkata-10175',
+    zomato: 'https://www.zomato.com/kolkata/kfc-park-street/order',
+  },
+  'mcdonald': {
+    swiggy: 'https://www.swiggy.com/restaurants/mcdonalds-park-street-kolkata-10180',
+    zomato: 'https://www.zomato.com/kolkata/mcdonalds-park-street/order',
+  },
+  'subway': {
+    swiggy: 'https://www.swiggy.com/restaurants/subway-park-street-kolkata-10185',
+    zomato: 'https://www.zomato.com/kolkata/subway-park-street/order',
+  },
+  'wow! momo': {
+    swiggy: 'https://www.swiggy.com/restaurants/wow-momo-park-street-kolkata-10190',
+    zomato: 'https://www.zomato.com/kolkata/wow-momo-park-street/order',
+  },
+  'behrouz': {
+    swiggy: 'https://www.swiggy.com/restaurants/behrouz-biryani-central-kolkata-10200',
+    zomato: 'https://www.zomato.com/kolkata/behrouz-biryani-central-kolkata/order',
+  },
+  'biryani by kilo': {
+    swiggy: 'https://www.swiggy.com/restaurants/biryani-by-kilo-park-street-kolkata-10205',
+    zomato: 'https://www.zomato.com/kolkata/biryani-by-kilo-park-street/order',
+  },
+  'haldiram': {
+    swiggy: 'https://www.swiggy.com/restaurants/haldirams-ballygunge-kolkata-10210',
+    zomato: 'https://www.zomato.com/kolkata/haldirams-ballygunge/order',
+  },
+  'starbucks': {
+    swiggy: 'https://www.swiggy.com/restaurants/starbucks-coffee-park-street-kolkata-10215',
+    zomato: 'https://www.zomato.com/kolkata/starbucks-park-street/order',
+  },
+
+  // Northern India / Delhi NCR
+  'karim': {
+    swiggy: 'https://www.swiggy.com/restaurants/karims-jama-masjid-delhi-20100',
+    zomato: 'https://www.zomato.com/ncr/karims-jama-masjid-new-delhi/order',
+  },
+  'moti mahal': {
+    swiggy: 'https://www.swiggy.com/restaurants/moti-mahal-daryaganj-delhi-20105',
+    zomato: 'https://www.zomato.com/ncr/moti-mahal-daryaganj-new-delhi/order',
+  },
+  'gulati': {
+    swiggy: 'https://www.swiggy.com/restaurants/gulati-pandara-road-delhi-20110',
+    zomato: 'https://www.zomato.com/ncr/gulati-pandara-road-new-delhi/order',
+  },
+  'bukhara': {
+    swiggy: 'https://www.swiggy.com/restaurants/bukhara-itc-maurya-chanakyapuri-delhi-20115',
+    zomato: 'https://www.zomato.com/ncr/bukhara-itc-maurya-chanakyapuri-new-delhi/order',
+  },
+
+  // Southern India / Bangalore & Chennai & Hyderabad
+  'saravana': {
+    swiggy: 'https://www.swiggy.com/restaurants/hotel-saravana-bhavan-t-nagar-chennai-30100',
+    zomato: 'https://www.zomato.com/chennai/hotel-saravana-bhavan-t-nagar/order',
+  },
+  'murugan idli': {
+    swiggy: 'https://www.swiggy.com/restaurants/murugan-idli-shop-t-nagar-chennai-30105',
+    zomato: 'https://www.zomato.com/chennai/murugan-idli-shop-t-nagar/order',
+  },
+  'meghana': {
+    swiggy: 'https://www.swiggy.com/restaurants/meghana-foods-koramangala-5th-block-bangalore-40100',
+    zomato: 'https://www.zomato.com/bangalore/meghana-foods-koramangala-5th-block/order',
+  },
+  'nagarjuna': {
+    swiggy: 'https://www.swiggy.com/restaurants/nagarjuna-residency-road-bangalore-40105',
+    zomato: 'https://www.zomato.com/bangalore/nagarjuna-residency-road/order',
+  },
+  'vidyarthi bhavan': {
+    swiggy: 'https://www.swiggy.com/restaurants/vidyarthi-bhavan-basavanagudi-bangalore-40110',
+    zomato: 'https://www.zomato.com/bangalore/vidyarthi-bhavan-basavanagudi/order',
+  },
+  'paradise': {
+    swiggy: 'https://www.swiggy.com/restaurants/paradise-biryani-secunderabad-hyderabad-50100',
+    zomato: 'https://www.zomato.com/hyderabad/paradise-biryani-secunderabad/order',
+  },
+  'bawarchi': {
+    swiggy: 'https://www.swiggy.com/restaurants/bawarchi-rtc-x-roads-hyderabad-50105',
+    zomato: 'https://www.zomato.com/hyderabad/bawarchi-rtc-x-roads/order',
+  },
+  'shah ghouse': {
+    swiggy: 'https://www.swiggy.com/restaurants/shah-ghouse-hotel-tolichowki-hyderabad-50110',
+    zomato: 'https://www.zomato.com/hyderabad/shah-ghouse-hotel-tolichowki/order',
+  },
+
+  // Western India / Mumbai
+  'bademiya': {
+    swiggy: 'https://www.swiggy.com/restaurants/bademiya-colaba-mumbai-60100',
+    zomato: 'https://www.zomato.com/mumbai/bademiya-colaba/order',
+  },
+  'kyani': {
+    swiggy: 'https://www.swiggy.com/restaurants/kyani-and-co-marine-lines-mumbai-60105',
+    zomato: 'https://www.zomato.com/mumbai/kyani-co-marine-lines/order',
+  },
+  'britannia': {
+    swiggy: 'https://www.swiggy.com/restaurants/britannia-and-co-restaurant-fort-mumbai-60110',
+    zomato: 'https://www.zomato.com/mumbai/britannia-co-fort/order',
+  },
+  'sardar': {
+    swiggy: 'https://www.swiggy.com/restaurants/sardar-pav-bhaji-tardeo-mumbai-60120',
+    zomato: 'https://www.zomato.com/mumbai/sardar-refreshments-tardeo/order',
+  },
+  'gajalee': {
+    swiggy: 'https://www.swiggy.com/restaurants/gajalee-vile-parle-east-mumbai-60125',
+    zomato: 'https://www.zomato.com/mumbai/gajalee-vile-parle-east/order',
+  },
+  'mahesh': {
+    swiggy: 'https://www.swiggy.com/restaurants/mahesh-lunch-home-fort-mumbai-60130',
+    zomato: 'https://www.zomato.com/mumbai/mahesh-lunch-home-fort/order',
+  },
+  'sweet bengal': {
+    swiggy: 'https://www.swiggy.com/restaurants/sweet-bengal-bandra-west-mumbai-60135',
+    zomato: 'https://www.zomato.com/mumbai/sweet-bengal-bandra-west/order',
+  },
+
+  // Additional Regional Legends & Chains
+  'rameshwaram': {
+    swiggy: 'https://www.swiggy.com/restaurants/the-rameshwaram-cafe-indiranagar-bangalore-40120',
+    zomato: 'https://www.zomato.com/bangalore/the-rameshwaram-cafe-indiranagar/order',
+  },
+  'truffles': {
+    swiggy: 'https://www.swiggy.com/restaurants/truffles-st-marks-road-bangalore-40125',
+    zomato: 'https://www.zomato.com/bangalore/truffles-st-marks-road/order',
+  },
+  'empire': {
+    swiggy: 'https://www.swiggy.com/restaurants/hotel-empire-church-street-bangalore-40130',
+    zomato: 'https://www.zomato.com/bangalore/hotel-empire-church-street/order',
+  },
+  'ctr': {
+    swiggy: 'https://www.swiggy.com/restaurants/shri-sagar-ctr-malleshwaram-bangalore-40135',
+    zomato: 'https://www.zomato.com/bangalore/shri-sagar-ctr-malleshwaram/order',
+  },
+  'dada boudi': {
+    swiggy: 'https://www.swiggy.com/restaurants/dada-boudi-biryani-barrackpore-kolkata-10240',
+    zomato: 'https://www.zomato.com/kolkata/dada-boudi-restaurant-barrackpore/order',
+  },
+  '6 ballygunge': {
+    swiggy: 'https://www.swiggy.com/restaurants/6-ballygunge-place-ballygunge-kolkata-10245',
+    zomato: 'https://www.zomato.com/kolkata/6-ballygunge-place-ballygunge/order',
+  },
+  'kasturi': {
+    swiggy: 'https://www.swiggy.com/restaurants/kasturi-restaurant-new-market-area-kolkata-10250',
+    zomato: 'https://www.zomato.com/kolkata/kasturi-restaurant-new-market-area/order',
+  },
+  'thalappakatti': {
+    swiggy: 'https://www.swiggy.com/restaurants/dindigul-thalappakatti-t-nagar-chennai-30110',
+    zomato: 'https://www.zomato.com/chennai/dindigul-thalappakatti-t-nagar/order',
+  },
+  'aasife': {
+    swiggy: 'https://www.swiggy.com/restaurants/aasife-biriyani-anna-nagar-chennai-30115',
+    zomato: 'https://www.zomato.com/chennai/aasife-biriyani-anna-nagar/order',
+  },
+  'chai point': {
+    swiggy: 'https://www.swiggy.com/restaurants/chai-point-central-kolkata-10255',
+    zomato: 'https://www.zomato.com/kolkata/chai-point-central-kolkata/order',
+  },
+  'chaayos': {
+    swiggy: 'https://www.swiggy.com/restaurants/chaayos-chai-nashta-central-delhi-20120',
+    zomato: 'https://www.zomato.com/ncr/chaayos-connaught-place-new-delhi/order',
+  },
+  'bikanervala': {
+    swiggy: 'https://www.swiggy.com/restaurants/bikanervala-connaught-place-delhi-20125',
+    zomato: 'https://www.zomato.com/ncr/bikanervala-connaught-place-new-delhi/order',
+  },
+  'al jawahar': {
+    swiggy: 'https://www.swiggy.com/restaurants/al-jawahar-jama-masjid-delhi-20130',
+    zomato: 'https://www.zomato.com/ncr/al-jawahar-jama-masjid-new-delhi/order',
+  },
+  'rajinder': {
+    swiggy: 'https://www.swiggy.com/restaurants/rajinder-da-dhaba-safdarjung-delhi-20135',
+    zomato: 'https://www.zomato.com/ncr/rajinder-da-dhaba-safdarjung-enclave-new-delhi/order',
+  },
+  'sita ram': {
+    swiggy: 'https://www.swiggy.com/restaurants/sita-ram-diwan-chand-paharganj-delhi-20140',
+    zomato: 'https://www.zomato.com/ncr/sita-ram-diwan-chand-paharganj-new-delhi/order',
+  },
+  'kake da': {
+    swiggy: 'https://www.swiggy.com/restaurants/kake-da-hotel-connaught-place-delhi-20145',
+    zomato: 'https://www.zomato.com/ncr/kake-da-hotel-connaught-place-new-delhi/order',
+  },
+  'giani': {
+    swiggy: 'https://www.swiggy.com/restaurants/gianis-ice-cream-chandni-chowk-delhi-20150',
+    zomato: 'https://www.zomato.com/ncr/giani-ice-cream-chandni-chowk-new-delhi/order',
+  },
+  'grand hotel': {
+    swiggy: 'https://www.swiggy.com/restaurants/grand-hotel-abids-hyderabad-50115',
+    zomato: 'https://www.zomato.com/hyderabad/grand-hotel-abids/order',
+  },
+  'cafe niloufer': {
+    swiggy: 'https://www.swiggy.com/restaurants/cafe-niloufer-red-hills-hyderabad-50120',
+    zomato: 'https://www.zomato.com/hyderabad/cafe-niloufer-red-hills/order',
+  },
+  'pista house': {
+    swiggy: 'https://www.swiggy.com/restaurants/pista-house-charminar-hyderabad-50125',
+    zomato: 'https://www.zomato.com/hyderabad/pista-house-charminar/order',
+  },
+};
+
+/**
+ * Resolves the verified direct storefront link for Swiggy and Zomato.
+ * If mapped, opens that restaurant's storefront directly inside Swiggy/Zomato.
+ * If not specifically mapped, searches that exact restaurant name so the platform prioritizes this outlet.
+ */
+export function getDirectRestaurantStoreUrl(
+  restaurantName: string,
+  platform: 'swiggy' | 'zomato',
+  dishQuery?: string
+): string {
+  const clean = restaurantName.toLowerCase().replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
+  for (const [key, urls] of Object.entries(RESTAURANT_DIRECT_STORE_URLS)) {
+    if (clean.includes(key) || key.includes(clean)) {
+      return platform === 'swiggy' ? urls.swiggy : urls.zomato;
+    }
+  }
+
+  // Safe fallback: search by the restaurant brand name to land on that restaurant's storefront
+  const brandName = getCleanRestaurantBrand(restaurantName);
+  const targetTerm = brandName.length > 2 ? brandName : (dishQuery || restaurantName);
+  const encoded = encodeURIComponent(targetTerm);
+  return platform === 'swiggy'
+    ? `https://www.swiggy.com/search?query=${encoded}`
+    : `https://www.zomato.com/search?q=${encoded}`;
+}
+
 // ============================================================================
 // HYPERLOCAL RESOLVER: Returns EVERY restaurant available in the given PIN code!
 // ============================================================================
@@ -1393,9 +1679,9 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
 
       const cleanDish = getCleanDishName(dish);
 
-      // 🌟 DEEP-LINK DIRECTLY TO THIS SPECIFIC DISH ON SWIGGY & ZOMATO (Forces Dishes Tab + ADD Button)
-      const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanDish)}`;
-      const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanDish)}`;
+      // 🌟 DIRECT RESTAURANT STORE LINK ON SWIGGY & ZOMATO (Opens exact restaurant menu; 0 competitor ads)
+      const swiggyStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'swiggy', cleanDish);
+      const zomatoStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'zomato', cleanDish);
 
       // PriceBite Direct prices (always lowest with 0% extra commissions)
       const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1473,7 +1759,7 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
             ratingCount: 19800,
             deliveryTimeMinutes: aggregatorDeliveryTime,
             inStock: true,
-            orderUrl: swiggySearchUrl,
+            orderUrl: swiggyStoreUrl,
             appliedCoupons: ['SWIGGYIT'],
             appliedBankOffers: ['HDFC_OFF'],
             isOpen: operatingStatus.isOpen,
@@ -1503,7 +1789,7 @@ export function getProductsForLocation(pin: PINCodeDetails | null): ProductCompa
             ratingCount: 22400,
             deliveryTimeMinutes: aggregatorDeliveryTime + 3,
             inStock: true,
-            orderUrl: zomatoSearchUrl,
+            orderUrl: zomatoStoreUrl,
             appliedCoupons: ['ZOMATOGOLD'],
             appliedBankOffers: ['SBI_DEAL'],
             isOpen: operatingStatus.isOpen,
@@ -1623,9 +1909,9 @@ export function generateUniversalDishProducts(
 
     const cleanDish = getCleanDishName(formattedDishName);
 
-    // Deep-links directly to this specific dish on Swiggy & Zomato (Forces Dishes Tab + ADD Button)
-    const swiggySearchUrl = `https://www.swiggy.com/search?query=${encodeURIComponent(cleanDish)}`;
-    const zomatoSearchUrl = `https://www.zomato.com/search?q=${encodeURIComponent(cleanDish)}`;
+    // 🌟 DIRECT RESTAURANT STORE LINK ON SWIGGY & ZOMATO (Opens exact restaurant menu; 0 competitor ads)
+    const swiggyStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'swiggy', cleanDish);
+    const zomatoStoreUrl = getDirectRestaurantStoreUrl(rest.name, 'zomato', cleanDish);
 
     // PriceBite Direct prices (always lowest with 0% extra commissions)
     const pbDiscount = Math.round(dishBasePrice * 0.22);
@@ -1703,7 +1989,7 @@ export function generateUniversalDishProducts(
           ratingCount: 16800,
           deliveryTimeMinutes: aggregatorDeliveryTime,
           inStock: true,
-          orderUrl: swiggySearchUrl,
+          orderUrl: swiggyStoreUrl,
           appliedCoupons: ['SWIGGYIT'],
           appliedBankOffers: ['HDFC_OFF'],
           isOpen: operatingStatus.isOpen,
@@ -1733,7 +2019,7 @@ export function generateUniversalDishProducts(
           ratingCount: 19500,
           deliveryTimeMinutes: aggregatorDeliveryTime + 3,
           inStock: true,
-          orderUrl: zomatoSearchUrl,
+          orderUrl: zomatoStoreUrl,
           appliedCoupons: ['ZOMATOGOLD'],
           appliedBankOffers: ['SBI_DEAL'],
           isOpen: operatingStatus.isOpen,

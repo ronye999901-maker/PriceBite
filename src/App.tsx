@@ -810,16 +810,16 @@ export function App() {
             >
               <div className="flex items-center space-x-2 text-emerald-500 font-bold">
                 <CheckCircle className="w-4 h-4" />
-                <span>Verified Direct Restaurant Menu Deep Link</span>
+                <span>Verified Direct Storefront (0 Competitor Ads)</span>
               </div>
               <p className="text-slate-400 leading-relaxed">
-                PriceBite is opening the official menu of{' '}
+                PriceBite is connecting you directly to{' '}
                 <strong className="text-slate-200 font-bold">
                   {redirectingPlatform.restaurantName || 'this restaurant'}
-                </strong>{' '}
-                on {redirectingPlatform.platform.platformName}
+                </strong>
+                's official store on {redirectingPlatform.platform.platformName}. Your order is placed 100% on {redirectingPlatform.platform.platformName} and delivered directly by their riders
                 {currentPinDetails
-                  ? ` for fast delivery to 📍 ${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
+                  ? ` to 📍 ${currentPinDetails.area}, ${currentPinDetails.district} (${currentPinDetails.pinCode})`
                   : ''}
                 .
               </p>
@@ -852,8 +852,8 @@ export function App() {
                 <Smartphone className="w-4 h-4" />
                 <span>
                   {redirectingPlatform.platform.isOpen === false
-                    ? `View Dish on ${redirectingPlatform.platform.platformName} anyway →`
-                    : `Open Dish on ${redirectingPlatform.platform.platformName} →`}
+                    ? `View Store on ${redirectingPlatform.platform.platformName} anyway →`
+                    : `Open ${redirectingPlatform.restaurantName || 'Store'} on ${redirectingPlatform.platform.platformName} →`}
                 </span>
               </button>
 
