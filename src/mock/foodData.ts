@@ -214,6 +214,90 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
       isPureVeg: true,
       featuredDishes: ['Steamed Rice Idli with Sambar', 'Mysore Masala Dosa', 'Traditional Filter Coffee'],
     },
+    {
+      name: 'Sankalp Authentic South Indian (Sector 5, Salt Lake & New Town)',
+      cuisine: 'South Indian, Giant Dosa, Steamed Idli, Sambhar Vada, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 280,
+      category: 'South Indian',
+      offer1: 'Steamed Button Idli Combo ₹139 on Direct',
+      offer2: 'Flat ₹60 Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Steamed Button Idli Sambar (12 Pcs)', 'Mysore Masala Dosa', 'Rava Onion Dosa', 'Medu Vada'],
+    },
+    {
+      name: 'The Rameshwaram Cafe Express (Kolkata Hub)',
+      cuisine: 'South Indian, Ghee Podi Thatte Idli, Filter Coffee, Crispy Vada, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.9,
+      cost: 240,
+      category: 'South Indian',
+      offer1: 'Ghee Thatte Idli Duo ₹129 on Direct',
+      offer2: 'Free Filter Coffee on Swiggy One',
+      isPureVeg: true,
+      featuredDishes: ['Ghee Podi Thatte Idli (2 Pcs)', 'Open Butter Masala Dosa', 'Ghee Sambar Vada'],
+    },
+    {
+      name: 'Kurry Patta South Indian Bistro (Salt Lake)',
+      cuisine: 'South Indian, Chettinad, Thatte Idli, Filter Coffee, Dosa, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 260,
+      category: 'South Indian',
+      offer1: 'Podi Idli & Vada Combo ₹149 on Direct',
+      offer2: 'Flat ₹50 Off on Zomato',
+      isPureVeg: true,
+      featuredDishes: ['Ghee Podi Thatte Idli', 'Gunpowder Masala Dosa', 'Curd Vada'],
+    },
+    {
+      name: 'Idli Bhavan Pure Veg (Action Area, New Town)',
+      cuisine: 'South Indian, Steamed Idli, Masala Dosa, Filter Coffee, Tiffin, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.7,
+      cost: 190,
+      category: 'South Indian',
+      offer1: 'Classic Steamed Idli ₹89 on Direct',
+      offer2: 'Flat 20% Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Classic Steamed Idli (3 Pcs)', 'Podi Idli Sambar Combo', 'Onion Uttapam'],
+    },
+    {
+      name: 'Saravana Bhavan South Indian (Park Street Area)',
+      cuisine: 'South Indian, Traditional Madras Tiffin, Idli, Dosa, Sambar Vada, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.8,
+      cost: 250,
+      category: 'South Indian',
+      offer1: 'Mini Ghee Sambar Idli ₹120 on Direct',
+      offer2: 'Flat ₹40 Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['14 Mini Ghee Sambar Idli', 'Special Masala Dosa', 'Rava Kesari'],
+    },
+    {
+      name: 'Dosa Coffee South Indian Kitchen (Salt Lake)',
+      cuisine: 'South Indian, Pure Veg Tiffin, Thatte Idli, Filter Coffee',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.7,
+      cost: 210,
+      category: 'South Indian',
+      offer1: 'Steamed Rice Idli Meal ₹99 on Direct',
+      offer2: 'Free Sambar Cup on Zomato',
+      isPureVeg: true,
+      featuredDishes: ['Steamed Rice Idli (2 Pcs)', 'Benne Dosa', 'Medu Vada Sambar'],
+    },
+    {
+      name: 'Swagath Authentic South Indian (Hazra / South Kolkata)',
+      cuisine: 'South Indian, Udupi Tiffin, Rava Idli, Mysore Pak, Dosa',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.7,
+      cost: 230,
+      category: 'South Indian',
+      offer1: 'Traditional Rava Idli ₹115 on Direct',
+      offer2: 'Flat 15% Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Traditional Rava Idli with Ghee', 'Paper Masala Dosa', 'Filter Kaapi'],
+    },
   ],
 
   midnapore: [
@@ -294,6 +378,30 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
       offer2: 'Flat ₹30 Off on Swiggy',
       isPureVeg: true,
       featuredDishes: ['Steamed Rice Idli Sambar (2 Pcs)', 'Crispy Ghee Masala Dosa', 'Medu Vada Duo'],
+    },
+    {
+      name: 'Udupi Krishna Tiffin (Medinipur Station Road)',
+      cuisine: 'South Indian, Steamed Idli, Masala Dosa, Sambar Vada, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.7,
+      cost: 160,
+      category: 'South Indian',
+      offer1: 'Steamed Rice Idli ₹79 on Direct',
+      offer2: 'Flat ₹25 Off on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Steamed Rice Idli (3 Pcs)', 'Special Masala Dosa', 'Medu Vada'],
+    },
+    {
+      name: 'Sagar South Indian Cafe (Medinipur Town)',
+      cuisine: 'South Indian, Ghee Idli, Filter Coffee, Dosa, Pure Veg',
+      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+      rating: 4.6,
+      cost: 180,
+      category: 'South Indian',
+      offer1: 'Ghee Sambar Idli ₹89 on Direct',
+      offer2: 'Free Chutney on Swiggy',
+      isPureVeg: true,
+      featuredDishes: ['Ghee Sambar Idli', 'Butter Paper Dosa', 'Upma with Chutney'],
     },
   ],
 
@@ -1174,8 +1282,29 @@ const NATIONWIDE_QSR_CHAINS: RestaurantSeed[] = [
  */
 export function getCleanRestaurantBrand(name: string): string {
   let clean = name.replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
-  clean = clean.replace(/\s+(Dum Biryani|Restaurant|Hotel|Cafe|Bar|Dhaba)$/i, '').trim();
+  clean = clean
+    .replace(/\s+(Authentic South Indian|Heritage South Indian|Pure Veg South Indian|South Indian|Dum Biryani|Awadhi Biryani|Royal Period Dining|Continental & Chelo Kebab|Heritage Dining|Traditional Bengali|Chinese & Asian Wok|Homestyle Bengali|Heritage Snacks|Legend|Pure Veg|Restaurant|Hotel|Cafe|Bar|Dhaba|Specialist|Bistro|Kitchen|Express)$/i, '')
+    .trim();
   const lower = clean.toLowerCase();
+  if (lower.startsWith('banana leaf')) return 'Banana Leaf';
+  if (lower.startsWith('jyoti vihar')) return 'Jyoti Vihar';
+  if (lower.startsWith('sankalp')) return 'Sankalp';
+  if (lower.startsWith('kurry patta')) return 'Kurry Patta';
+  if (lower.startsWith('rameshwaram')) return 'The Rameshwaram Cafe';
+  if (lower.startsWith('saravana')) return 'Saravana Bhavan';
+  if (lower.startsWith('idli bhavan')) return 'Idli Bhavan';
+  if (lower.startsWith('dosa coffee')) return 'Dosa Coffee';
+  if (lower.startsWith('swagath')) return 'Swagath';
+  if (lower.startsWith('madras tiffin')) return 'Madras Tiffin';
+  if (lower.startsWith('udupi krishna')) return 'Udupi Krishna Tiffin';
+  if (lower.startsWith('arsalan')) return 'Arsalan';
+  if (lower.startsWith('aminia')) return 'Aminia';
+  if (lower.startsWith('oudh')) return 'Oudh 1590';
+  if (lower.startsWith('peter cat')) return 'Peter Cat';
+  if (lower.startsWith('mocambo')) return 'Mocambo';
+  if (lower.startsWith('dada boudi')) return 'Dada Boudi Biryani';
+  if (lower.startsWith('biriyani mahal')) return 'Biriyani Mahal';
+  if (lower.startsWith('chowman')) return 'Chowman';
   if (lower.startsWith('subway')) return 'Subway';
   if (lower.startsWith('haldiram')) return "Haldiram's";
   if (lower.startsWith('starbucks')) return 'Starbucks';
@@ -1295,7 +1424,7 @@ export function getRestaurantOperatingStatus(restaurantName: string, category: s
  * the customer straight inside that restaurant's official menu to place the order.
  */
 export const RESTAURANT_DIRECT_STORE_URLS: Record<string, { swiggy: string; zomato: string }> = {
-  // Paschim Medinipur / Midnapore Legends (Real Swiggy Stores)
+  // Paschim Medinipur / Midnapore Local Storefronts
   'biriyani mahal': {
     swiggy: 'https://www.swiggy.com/city/medinipur',
     zomato: 'https://www.zomato.com/search?q=Biriyani+Mahal+Medinipur',
@@ -1319,266 +1448,6 @@ export const RESTAURANT_DIRECT_STORE_URLS: Record<string, { swiggy: string; zoma
   'madras tiffin': {
     swiggy: 'https://www.swiggy.com/search?query=Madras+Tiffin+Dosa+Medinipur',
     zomato: 'https://www.zomato.com/search?q=Madras+Tiffin+Dosa+Medinipur',
-  },
-
-  // Eastern India / Kolkata Legends
-  'banana leaf': {
-    swiggy: 'https://www.swiggy.com/restaurants/banana-leaf-lake-market-kalighat-kolkata-10270',
-    zomato: 'https://www.zomato.com/kolkata/banana-leaf-lake-market/order',
-  },
-  'jyoti vihar': {
-    swiggy: 'https://www.swiggy.com/restaurants/jyoti-vihar-camac-street-area-kolkata-10275',
-    zomato: 'https://www.zomato.com/kolkata/jyoti-vihar-camac-street-area/order',
-  },
-  'arsalan': {
-    swiggy: 'https://www.swiggy.com/restaurants/arsalan-restaurant-circus-avenue-park-circus-area-kolkata-10144',
-    zomato: 'https://www.zomato.com/kolkata/arsalan-park-circus-area/order',
-  },
-  'aminia': {
-    swiggy: 'https://www.swiggy.com/restaurants/aminia-restaurant-new-market-area-kolkata-10147',
-    zomato: 'https://www.zomato.com/kolkata/aminia-new-market-area/order',
-  },
-  'oudh': {
-    swiggy: 'https://www.swiggy.com/restaurants/oudh-1590-deshapriya-park-kolkata-10149',
-    zomato: 'https://www.zomato.com/kolkata/oudh-1590-deshapriya-park/order',
-  },
-  'royal indian': {
-    swiggy: 'https://www.swiggy.com/restaurants/royal-indian-hotel-burrabazar-kolkata-10152',
-    zomato: 'https://www.zomato.com/kolkata/royal-indian-hotel-burrabazar/order',
-  },
-  'shiraz': {
-    swiggy: 'https://www.swiggy.com/restaurants/shiraz-golden-restaurant-park-street-area-kolkata-10155',
-    zomato: 'https://www.zomato.com/kolkata/shiraz-golden-restaurant-park-street-area/order',
-  },
-  'peter cat': {
-    swiggy: 'https://www.swiggy.com/restaurants/peter-cat-park-street-area-kolkata-10220',
-    zomato: 'https://www.zomato.com/kolkata/peter-cat-park-street-area/order',
-  },
-  'mocambo': {
-    swiggy: 'https://www.swiggy.com/restaurants/mocambo-park-street-area-kolkata-10225',
-    zomato: 'https://www.zomato.com/kolkata/mocambo-park-street-area/order',
-  },
-  'flurys': {
-    swiggy: 'https://www.swiggy.com/restaurants/flurys-park-street-area-kolkata-10230',
-    zomato: 'https://www.zomato.com/kolkata/flurys-park-street-area/order',
-  },
-  'balaram': {
-    swiggy: 'https://www.swiggy.com/restaurants/balaram-mullick-and-radharaman-mullick-bhawanipur-kolkata-10235',
-    zomato: 'https://www.zomato.com/kolkata/balaram-mullick-radharaman-mullick-bhawanipur/order',
-  },
-  'chowman': {
-    swiggy: 'https://www.swiggy.com/restaurants/chowman-salt-lake-kolkata-10195',
-    zomato: 'https://www.zomato.com/kolkata/chowman-salt-lake/order',
-  },
-
-  // Nationwide Chains
-  'domino': {
-    swiggy: 'https://www.swiggy.com/restaurants/dominos-pizza-central-kolkata-10160',
-    zomato: 'https://www.zomato.com/kolkata/dominos-pizza-central-kolkata/order',
-  },
-  'pizza hut': {
-    swiggy: 'https://www.swiggy.com/restaurants/pizza-hut-park-street-kolkata-10165',
-    zomato: 'https://www.zomato.com/kolkata/pizza-hut-park-street/order',
-  },
-  'burger king': {
-    swiggy: 'https://www.swiggy.com/restaurants/burger-king-new-market-kolkata-10170',
-    zomato: 'https://www.zomato.com/kolkata/burger-king-new-market/order',
-  },
-  'kfc': {
-    swiggy: 'https://www.swiggy.com/restaurants/kfc-park-street-kolkata-10175',
-    zomato: 'https://www.zomato.com/kolkata/kfc-park-street/order',
-  },
-  'mcdonald': {
-    swiggy: 'https://www.swiggy.com/restaurants/mcdonalds-park-street-kolkata-10180',
-    zomato: 'https://www.zomato.com/kolkata/mcdonalds-park-street/order',
-  },
-  'subway': {
-    swiggy: 'https://www.swiggy.com/restaurants/subway-park-street-kolkata-10185',
-    zomato: 'https://www.zomato.com/kolkata/subway-park-street/order',
-  },
-  'wow! momo': {
-    swiggy: 'https://www.swiggy.com/restaurants/wow-momo-park-street-kolkata-10190',
-    zomato: 'https://www.zomato.com/kolkata/wow-momo-park-street/order',
-  },
-  'behrouz': {
-    swiggy: 'https://www.swiggy.com/restaurants/behrouz-biryani-central-kolkata-10200',
-    zomato: 'https://www.zomato.com/kolkata/behrouz-biryani-central-kolkata/order',
-  },
-  'biryani by kilo': {
-    swiggy: 'https://www.swiggy.com/restaurants/biryani-by-kilo-park-street-kolkata-10205',
-    zomato: 'https://www.zomato.com/kolkata/biryani-by-kilo-park-street/order',
-  },
-  'haldiram': {
-    swiggy: 'https://www.swiggy.com/restaurants/haldirams-ballygunge-kolkata-10210',
-    zomato: 'https://www.zomato.com/kolkata/haldirams-ballygunge/order',
-  },
-  'starbucks': {
-    swiggy: 'https://www.swiggy.com/restaurants/starbucks-coffee-park-street-kolkata-10215',
-    zomato: 'https://www.zomato.com/kolkata/starbucks-park-street/order',
-  },
-
-  // Northern India / Delhi NCR
-  'karim': {
-    swiggy: 'https://www.swiggy.com/restaurants/karims-jama-masjid-delhi-20100',
-    zomato: 'https://www.zomato.com/ncr/karims-jama-masjid-new-delhi/order',
-  },
-  'moti mahal': {
-    swiggy: 'https://www.swiggy.com/restaurants/moti-mahal-daryaganj-delhi-20105',
-    zomato: 'https://www.zomato.com/ncr/moti-mahal-daryaganj-new-delhi/order',
-  },
-  'gulati': {
-    swiggy: 'https://www.swiggy.com/restaurants/gulati-pandara-road-delhi-20110',
-    zomato: 'https://www.zomato.com/ncr/gulati-pandara-road-new-delhi/order',
-  },
-  'bukhara': {
-    swiggy: 'https://www.swiggy.com/restaurants/bukhara-itc-maurya-chanakyapuri-delhi-20115',
-    zomato: 'https://www.zomato.com/ncr/bukhara-itc-maurya-chanakyapuri-new-delhi/order',
-  },
-
-  // Southern India / Bangalore & Chennai & Hyderabad
-  'saravana': {
-    swiggy: 'https://www.swiggy.com/restaurants/hotel-saravana-bhavan-t-nagar-chennai-30100',
-    zomato: 'https://www.zomato.com/chennai/hotel-saravana-bhavan-t-nagar/order',
-  },
-  'murugan idli': {
-    swiggy: 'https://www.swiggy.com/restaurants/murugan-idli-shop-t-nagar-chennai-30105',
-    zomato: 'https://www.zomato.com/chennai/murugan-idli-shop-t-nagar/order',
-  },
-  'meghana': {
-    swiggy: 'https://www.swiggy.com/restaurants/meghana-foods-koramangala-5th-block-bangalore-40100',
-    zomato: 'https://www.zomato.com/bangalore/meghana-foods-koramangala-5th-block/order',
-  },
-  'nagarjuna': {
-    swiggy: 'https://www.swiggy.com/restaurants/nagarjuna-residency-road-bangalore-40105',
-    zomato: 'https://www.zomato.com/bangalore/nagarjuna-residency-road/order',
-  },
-  'vidyarthi bhavan': {
-    swiggy: 'https://www.swiggy.com/restaurants/vidyarthi-bhavan-basavanagudi-bangalore-40110',
-    zomato: 'https://www.zomato.com/bangalore/vidyarthi-bhavan-basavanagudi/order',
-  },
-  'paradise': {
-    swiggy: 'https://www.swiggy.com/restaurants/paradise-biryani-secunderabad-hyderabad-50100',
-    zomato: 'https://www.zomato.com/hyderabad/paradise-biryani-secunderabad/order',
-  },
-  'bawarchi': {
-    swiggy: 'https://www.swiggy.com/restaurants/bawarchi-rtc-x-roads-hyderabad-50105',
-    zomato: 'https://www.zomato.com/hyderabad/bawarchi-rtc-x-roads/order',
-  },
-  'shah ghouse': {
-    swiggy: 'https://www.swiggy.com/restaurants/shah-ghouse-hotel-tolichowki-hyderabad-50110',
-    zomato: 'https://www.zomato.com/hyderabad/shah-ghouse-hotel-tolichowki/order',
-  },
-
-  // Western India / Mumbai
-  'bademiya': {
-    swiggy: 'https://www.swiggy.com/restaurants/bademiya-colaba-mumbai-60100',
-    zomato: 'https://www.zomato.com/mumbai/bademiya-colaba/order',
-  },
-  'kyani': {
-    swiggy: 'https://www.swiggy.com/restaurants/kyani-and-co-marine-lines-mumbai-60105',
-    zomato: 'https://www.zomato.com/mumbai/kyani-co-marine-lines/order',
-  },
-  'britannia': {
-    swiggy: 'https://www.swiggy.com/restaurants/britannia-and-co-restaurant-fort-mumbai-60110',
-    zomato: 'https://www.zomato.com/mumbai/britannia-co-fort/order',
-  },
-  'sardar': {
-    swiggy: 'https://www.swiggy.com/restaurants/sardar-pav-bhaji-tardeo-mumbai-60120',
-    zomato: 'https://www.zomato.com/mumbai/sardar-refreshments-tardeo/order',
-  },
-  'gajalee': {
-    swiggy: 'https://www.swiggy.com/restaurants/gajalee-vile-parle-east-mumbai-60125',
-    zomato: 'https://www.zomato.com/mumbai/gajalee-vile-parle-east/order',
-  },
-  'mahesh': {
-    swiggy: 'https://www.swiggy.com/restaurants/mahesh-lunch-home-fort-mumbai-60130',
-    zomato: 'https://www.zomato.com/mumbai/mahesh-lunch-home-fort/order',
-  },
-  'sweet bengal': {
-    swiggy: 'https://www.swiggy.com/restaurants/sweet-bengal-bandra-west-mumbai-60135',
-    zomato: 'https://www.zomato.com/mumbai/sweet-bengal-bandra-west/order',
-  },
-
-  // Additional Regional Legends & Chains
-  'rameshwaram': {
-    swiggy: 'https://www.swiggy.com/restaurants/the-rameshwaram-cafe-indiranagar-bangalore-40120',
-    zomato: 'https://www.zomato.com/bangalore/the-rameshwaram-cafe-indiranagar/order',
-  },
-  'truffles': {
-    swiggy: 'https://www.swiggy.com/restaurants/truffles-st-marks-road-bangalore-40125',
-    zomato: 'https://www.zomato.com/bangalore/truffles-st-marks-road/order',
-  },
-  'empire': {
-    swiggy: 'https://www.swiggy.com/restaurants/hotel-empire-church-street-bangalore-40130',
-    zomato: 'https://www.zomato.com/bangalore/hotel-empire-church-street/order',
-  },
-  'ctr': {
-    swiggy: 'https://www.swiggy.com/restaurants/shri-sagar-ctr-malleshwaram-bangalore-40135',
-    zomato: 'https://www.zomato.com/bangalore/shri-sagar-ctr-malleshwaram/order',
-  },
-  'dada boudi': {
-    swiggy: 'https://www.swiggy.com/restaurants/dada-boudi-biryani-barrackpore-kolkata-10240',
-    zomato: 'https://www.zomato.com/kolkata/dada-boudi-restaurant-barrackpore/order',
-  },
-  '6 ballygunge': {
-    swiggy: 'https://www.swiggy.com/restaurants/6-ballygunge-place-ballygunge-kolkata-10245',
-    zomato: 'https://www.zomato.com/kolkata/6-ballygunge-place-ballygunge/order',
-  },
-  'kasturi': {
-    swiggy: 'https://www.swiggy.com/restaurants/kasturi-restaurant-new-market-area-kolkata-10250',
-    zomato: 'https://www.zomato.com/kolkata/kasturi-restaurant-new-market-area/order',
-  },
-  'thalappakatti': {
-    swiggy: 'https://www.swiggy.com/restaurants/dindigul-thalappakatti-t-nagar-chennai-30110',
-    zomato: 'https://www.zomato.com/chennai/dindigul-thalappakatti-t-nagar/order',
-  },
-  'aasife': {
-    swiggy: 'https://www.swiggy.com/restaurants/aasife-biriyani-anna-nagar-chennai-30115',
-    zomato: 'https://www.zomato.com/chennai/aasife-biriyani-anna-nagar/order',
-  },
-  'chai point': {
-    swiggy: 'https://www.swiggy.com/restaurants/chai-point-central-kolkata-10255',
-    zomato: 'https://www.zomato.com/kolkata/chai-point-central-kolkata/order',
-  },
-  'chaayos': {
-    swiggy: 'https://www.swiggy.com/restaurants/chaayos-chai-nashta-central-delhi-20120',
-    zomato: 'https://www.zomato.com/ncr/chaayos-connaught-place-new-delhi/order',
-  },
-  'bikanervala': {
-    swiggy: 'https://www.swiggy.com/restaurants/bikanervala-connaught-place-delhi-20125',
-    zomato: 'https://www.zomato.com/ncr/bikanervala-connaught-place-new-delhi/order',
-  },
-  'al jawahar': {
-    swiggy: 'https://www.swiggy.com/restaurants/al-jawahar-jama-masjid-delhi-20130',
-    zomato: 'https://www.zomato.com/ncr/al-jawahar-jama-masjid-new-delhi/order',
-  },
-  'rajinder': {
-    swiggy: 'https://www.swiggy.com/restaurants/rajinder-da-dhaba-safdarjung-delhi-20135',
-    zomato: 'https://www.zomato.com/ncr/rajinder-da-dhaba-safdarjung-enclave-new-delhi/order',
-  },
-  'sita ram': {
-    swiggy: 'https://www.swiggy.com/restaurants/sita-ram-diwan-chand-paharganj-delhi-20140',
-    zomato: 'https://www.zomato.com/ncr/sita-ram-diwan-chand-paharganj-new-delhi/order',
-  },
-  'kake da': {
-    swiggy: 'https://www.swiggy.com/restaurants/kake-da-hotel-connaught-place-delhi-20145',
-    zomato: 'https://www.zomato.com/ncr/kake-da-hotel-connaught-place-new-delhi/order',
-  },
-  'giani': {
-    swiggy: 'https://www.swiggy.com/restaurants/gianis-ice-cream-chandni-chowk-delhi-20150',
-    zomato: 'https://www.zomato.com/ncr/giani-ice-cream-chandni-chowk-new-delhi/order',
-  },
-  'grand hotel': {
-    swiggy: 'https://www.swiggy.com/restaurants/grand-hotel-abids-hyderabad-50115',
-    zomato: 'https://www.zomato.com/hyderabad/grand-hotel-abids/order',
-  },
-  'cafe niloufer': {
-    swiggy: 'https://www.swiggy.com/restaurants/cafe-niloufer-red-hills-hyderabad-50120',
-    zomato: 'https://www.zomato.com/hyderabad/cafe-niloufer-red-hills/order',
-  },
-  'pista house': {
-    swiggy: 'https://www.swiggy.com/restaurants/pista-house-charminar-hyderabad-50125',
-    zomato: 'https://www.zomato.com/hyderabad/pista-house-charminar/order',
   },
 };
 
@@ -1626,43 +1495,24 @@ export function getDirectRestaurantStoreUrl(
   dishQuery?: string,
   pin?: PINCodeDetails | null
 ): string {
-  const clean = restaurantName.toLowerCase().replace(/\s*(&|-|\(|,|\/|\+).*/, '').trim();
   const zoneInfo = getGeographicZone(pin || null);
   const city = pin?.district || zoneInfo.majorCity || '';
-  const area = pin?.area || '';
+  const area = pin?.area ? pin.area.split('/')[0].split(',')[0].trim() : '';
   const brandName = getCleanRestaurantBrand(restaurantName);
   const citySlug = getSwiggyCitySlug(city, pin?.pinCode);
 
-  // 1. National QSR Chains (Domino's, KFC, Burger King, Pizza Hut, Subway, Wow! Momo, etc.)
-  // Localized dynamically to the user's exact PIN code city/area so it never opens another city's outlet!
-  const isNationalChain =
-    clean.includes('domino') ||
-    clean.includes('kfc') ||
-    clean.includes('burger king') ||
-    clean.includes('pizza hut') ||
-    clean.includes('subway') ||
-    clean.includes('mcdonald') ||
-    clean.includes('wow! momo') ||
-    clean.includes('behrouz') ||
-    clean.includes('faasos');
-
-  if (isNationalChain) {
-    const loc = citySlug || city || area;
-    const targetQuery = `${brandName} ${loc}`.trim();
-    return platform === 'swiggy'
-      ? `https://www.swiggy.com/search?query=${encodeURIComponent(targetQuery)}`
-      : `https://www.zomato.com/search?q=${encodeURIComponent(targetQuery)}`;
-  }
-
-  // 2. Check exact mapped URLs in RESTAURANT_DIRECT_STORE_URLS
+  // 1. Check exact mapped URLs in RESTAURANT_DIRECT_STORE_URLS (e.g. Medinipur storefront)
+  const brandKey = brandName.toLowerCase();
   for (const [key, urls] of Object.entries(RESTAURANT_DIRECT_STORE_URLS)) {
-    if (clean.includes(key) || key.includes(clean)) {
+    if (brandKey === key || brandKey.includes(key)) {
       return platform === 'swiggy' ? urls.swiggy : urls.zomato;
     }
   }
 
-  // 3. Dynamic Location Search for ANY other restaurant across all PIN codes in India
-  const targetQuery = `${brandName} ${citySlug || city}`.trim();
+  // 2. Guaranteed valid live store search on Swiggy and Zomato
+  // Locates the restaurant in the user's city/PIN code and displays their live menu
+  const loc = citySlug || city || area;
+  const targetQuery = `${brandName} ${loc}`.trim();
   const encoded = encodeURIComponent(targetQuery);
   return platform === 'swiggy'
     ? `https://www.swiggy.com/search?query=${encoded}`
@@ -2013,7 +1863,13 @@ export function isRestaurantCuisineCompatible(
       restText.includes('vidyarthi') ||
       restText.includes('ctr') ||
       restText.includes('banana leaf') ||
-      restText.includes('jyoti vihar')
+      restText.includes('jyoti vihar') ||
+      restText.includes('sankalp') ||
+      restText.includes('kurry patta') ||
+      restText.includes('idli bhavan') ||
+      restText.includes('dosa coffee') ||
+      restText.includes('swagath') ||
+      restText.includes('sagar')
     );
   }
 
@@ -2203,16 +2059,19 @@ export function generateUniversalDishProducts(
     return isRestaurantCuisineCompatible(lowerQ, rest);
   });
 
-  // Fallback: If no local restaurants in this specific PIN serve this cuisine,
-  // fetch top regional restaurants across India that specialize in it (e.g. Saravana Bhavan, Rameshwaram Cafe)
-  if (eligibleSeeds.length === 0) {
+  // Variety Guarantee: If fewer than 6 restaurants in this specific PIN serve this cuisine,
+  // pull in authentic regional specialists from across the network without duplicating brands
+  // so the user always has a rich comparison matrix of 6 to 8 restaurants!
+  if (eligibleSeeds.length < 6) {
     const allNationalAndRegional: (RestaurantSeed & { isLocalLegend: boolean })[] = [
       ...Object.values(ZONE_RESTAURANTS).flat().map((r) => ({ ...r, isLocalLegend: true })),
       ...NATIONWIDE_QSR_CHAINS.map((r) => ({ ...r, isLocalLegend: false })),
     ];
-    eligibleSeeds = allNationalAndRegional.filter((rest) =>
-      isRestaurantCuisineCompatible(lowerQ, rest)
+    const supplemental = allNationalAndRegional.filter((rest) =>
+      isRestaurantCuisineCompatible(lowerQ, rest) &&
+      !eligibleSeeds.some((e) => getCleanRestaurantBrand(e.name).toLowerCase() === getCleanRestaurantBrand(rest.name).toLowerCase())
     );
+    eligibleSeeds = [...eligibleSeeds, ...supplemental];
   }
 
   // Prioritize restaurants that actually specialize in or feature this dish on their menu
