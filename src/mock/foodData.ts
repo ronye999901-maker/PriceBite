@@ -190,114 +190,6 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
       offer2: 'Flat 15% Off on Zomato Gold',
       featuredDishes: ['Original Chocolate Rum Ball', 'Full English Breakfast Plate', 'Mushroom Quiche'],
     },
-    {
-      name: 'Banana Leaf Authentic South Indian (Southern Avenue)',
-      cuisine: 'South Indian, Thatte Idli, Ghee Podi Dosa, Filter Coffee, Sambar Vada',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.8,
-      cost: 260,
-      category: 'South Indian',
-      offer1: 'Thatte Idli & Dosa Combo ₹149 on Direct',
-      offer2: 'Free Filter Coffee on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Ghee Sambar Thatte Idli (2 Pcs)', 'Butter Masala Dosa', 'Crispy Medu Vada with Coconut Chutney'],
-    },
-    {
-      name: 'Jyoti Vihar Heritage South Indian (Park Street)',
-      cuisine: 'Pure Veg South Indian, Steamed Rice Idli, Mysore Masala Dosa, Upma',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.8,
-      cost: 220,
-      category: 'South Indian',
-      offer1: 'Steamed Idli Duo ₹110 on Direct',
-      offer2: 'Flat 10% Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Steamed Rice Idli with Sambar', 'Mysore Masala Dosa', 'Traditional Filter Coffee'],
-    },
-    {
-      name: 'Sankalp Authentic South Indian (Sector 5, Salt Lake & New Town)',
-      cuisine: 'South Indian, Giant Dosa, Steamed Idli, Sambhar Vada, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.8,
-      cost: 280,
-      category: 'South Indian',
-      offer1: 'Steamed Button Idli Combo ₹139 on Direct',
-      offer2: 'Flat ₹60 Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Steamed Button Idli Sambar (12 Pcs)', 'Mysore Masala Dosa', 'Rava Onion Dosa', 'Medu Vada'],
-    },
-    {
-      name: 'The Rameshwaram Cafe Express (Kolkata Hub)',
-      cuisine: 'South Indian, Ghee Podi Thatte Idli, Filter Coffee, Crispy Vada, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.9,
-      cost: 240,
-      category: 'South Indian',
-      offer1: 'Ghee Thatte Idli Duo ₹129 on Direct',
-      offer2: 'Free Filter Coffee on Swiggy One',
-      isPureVeg: true,
-      featuredDishes: ['Ghee Podi Thatte Idli (2 Pcs)', 'Open Butter Masala Dosa', 'Ghee Sambar Vada'],
-    },
-    {
-      name: 'Kurry Patta South Indian Bistro (Salt Lake)',
-      cuisine: 'South Indian, Chettinad, Thatte Idli, Filter Coffee, Dosa, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.8,
-      cost: 260,
-      category: 'South Indian',
-      offer1: 'Podi Idli & Vada Combo ₹149 on Direct',
-      offer2: 'Flat ₹50 Off on Zomato',
-      isPureVeg: true,
-      featuredDishes: ['Ghee Podi Thatte Idli', 'Gunpowder Masala Dosa', 'Curd Vada'],
-    },
-    {
-      name: 'Idli Bhavan Pure Veg (Action Area, New Town)',
-      cuisine: 'South Indian, Steamed Idli, Masala Dosa, Filter Coffee, Tiffin, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.7,
-      cost: 190,
-      category: 'South Indian',
-      offer1: 'Classic Steamed Idli ₹89 on Direct',
-      offer2: 'Flat 20% Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Classic Steamed Idli (3 Pcs)', 'Podi Idli Sambar Combo', 'Onion Uttapam'],
-    },
-    {
-      name: 'Saravana Bhavan South Indian (Park Street Area)',
-      cuisine: 'South Indian, Traditional Madras Tiffin, Idli, Dosa, Sambar Vada, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.8,
-      cost: 250,
-      category: 'South Indian',
-      offer1: 'Mini Ghee Sambar Idli ₹120 on Direct',
-      offer2: 'Flat ₹40 Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['14 Mini Ghee Sambar Idli', 'Special Masala Dosa', 'Rava Kesari'],
-    },
-    {
-      name: 'Dosa Coffee South Indian Kitchen (Salt Lake)',
-      cuisine: 'South Indian, Pure Veg Tiffin, Thatte Idli, Filter Coffee',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.7,
-      cost: 210,
-      category: 'South Indian',
-      offer1: 'Steamed Rice Idli Meal ₹99 on Direct',
-      offer2: 'Free Sambar Cup on Zomato',
-      isPureVeg: true,
-      featuredDishes: ['Steamed Rice Idli (2 Pcs)', 'Benne Dosa', 'Medu Vada Sambar'],
-    },
-    {
-      name: 'Swagath Authentic South Indian (Hazra / South Kolkata)',
-      cuisine: 'South Indian, Udupi Tiffin, Rava Idli, Mysore Pak, Dosa',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.7,
-      cost: 230,
-      category: 'South Indian',
-      offer1: 'Traditional Rava Idli ₹115 on Direct',
-      offer2: 'Flat 15% Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Traditional Rava Idli with Ghee', 'Paper Masala Dosa', 'Filter Kaapi'],
-    },
   ],
 
   midnapore: [
@@ -378,30 +270,6 @@ const ZONE_RESTAURANTS: Record<string, RestaurantSeed[]> = {
       offer2: 'Flat ₹30 Off on Swiggy',
       isPureVeg: true,
       featuredDishes: ['Steamed Rice Idli Sambar (2 Pcs)', 'Crispy Ghee Masala Dosa', 'Medu Vada Duo'],
-    },
-    {
-      name: 'Udupi Krishna Tiffin (Medinipur Station Road)',
-      cuisine: 'South Indian, Steamed Idli, Masala Dosa, Sambar Vada, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.7,
-      cost: 160,
-      category: 'South Indian',
-      offer1: 'Steamed Rice Idli ₹79 on Direct',
-      offer2: 'Flat ₹25 Off on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Steamed Rice Idli (3 Pcs)', 'Special Masala Dosa', 'Medu Vada'],
-    },
-    {
-      name: 'Sagar South Indian Cafe (Medinipur Town)',
-      cuisine: 'South Indian, Ghee Idli, Filter Coffee, Dosa, Pure Veg',
-      img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
-      rating: 4.6,
-      cost: 180,
-      category: 'South Indian',
-      offer1: 'Ghee Sambar Idli ₹89 on Direct',
-      offer2: 'Free Chutney on Swiggy',
-      isPureVeg: true,
-      featuredDishes: ['Ghee Sambar Idli', 'Butter Paper Dosa', 'Upma with Chutney'],
     },
   ],
 
@@ -1286,17 +1154,9 @@ export function getCleanRestaurantBrand(name: string): string {
     .replace(/\s+(Authentic South Indian|Heritage South Indian|Pure Veg South Indian|South Indian|Dum Biryani|Awadhi Biryani|Royal Period Dining|Continental & Chelo Kebab|Heritage Dining|Traditional Bengali|Chinese & Asian Wok|Homestyle Bengali|Heritage Snacks|Legend|Pure Veg|Restaurant|Hotel|Cafe|Bar|Dhaba|Specialist|Bistro|Kitchen|Express)$/i, '')
     .trim();
   const lower = clean.toLowerCase();
-  if (lower.startsWith('banana leaf')) return 'Banana Leaf';
-  if (lower.startsWith('jyoti vihar')) return 'Jyoti Vihar';
-  if (lower.startsWith('sankalp')) return 'Sankalp';
-  if (lower.startsWith('kurry patta')) return 'Kurry Patta';
   if (lower.startsWith('rameshwaram')) return 'The Rameshwaram Cafe';
   if (lower.startsWith('saravana')) return 'Saravana Bhavan';
-  if (lower.startsWith('idli bhavan')) return 'Idli Bhavan';
-  if (lower.startsWith('dosa coffee')) return 'Dosa Coffee';
-  if (lower.startsWith('swagath')) return 'Swagath';
   if (lower.startsWith('madras tiffin')) return 'Madras Tiffin';
-  if (lower.startsWith('udupi krishna')) return 'Udupi Krishna Tiffin';
   if (lower.startsWith('arsalan')) return 'Arsalan';
   if (lower.startsWith('aminia')) return 'Aminia';
   if (lower.startsWith('oudh')) return 'Oudh 1590';
@@ -1867,15 +1727,7 @@ export function isRestaurantCuisineCompatible(
       restText.includes('saravana') ||
       restText.includes('murugan') ||
       restText.includes('vidyarthi') ||
-      restText.includes('ctr') ||
-      restText.includes('banana leaf') ||
-      restText.includes('jyoti vihar') ||
-      restText.includes('sankalp') ||
-      restText.includes('kurry patta') ||
-      restText.includes('idli bhavan') ||
-      restText.includes('dosa coffee') ||
-      restText.includes('swagath') ||
-      restText.includes('sagar')
+      restText.includes('ctr')
     );
   }
 
