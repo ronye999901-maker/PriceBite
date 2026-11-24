@@ -804,7 +804,7 @@ export function App() {
             </div>
 
             <div
-              className={`p-4 rounded-2xl border text-left text-xs space-y-2 ${
+              className={`p-4 rounded-2xl border text-left text-xs space-y-2.5 ${
                 themeMode === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
               }`}
             >
@@ -823,6 +823,14 @@ export function App() {
                   : ''}
                 .
               </p>
+              {redirectingPlatform.platform.platformName.includes('Swiggy') && (
+                <div className="p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-300 text-[11px] leading-relaxed flex items-center space-x-2">
+                  <span className="text-sm">💡</span>
+                  <span>
+                    <strong>Swiggy Tip:</strong> When Swiggy opens, tap the <strong>&quot;Restaurants&quot;</strong> tab at the top to view {redirectingPlatform.restaurantName || 'this store'}&apos;s full menu directly!
+                  </span>
+                </div>
+              )}
             </div>
 
             {redirectingPlatform.platform.isOpen === false && (

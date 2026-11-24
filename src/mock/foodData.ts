@@ -1510,13 +1510,19 @@ export function getDirectRestaurantStoreUrl(
   }
 
   // 2. Guaranteed valid live store search on Swiggy and Zomato
-  // Locates the restaurant in the user's city/PIN code and displays their live menu
-  const loc = citySlug || city || area;
-  const targetQuery = `${brandName} ${loc}`.trim();
-  const encoded = encodeURIComponent(targetQuery);
-  return platform === 'swiggy'
-    ? `https://www.swiggy.com/search?query=${encoded}`
-    : `https://www.zomato.com/search?q=${encoded}`;
+  // CRITICAL FIX: For Swiggy, do NOT append city name (like "kolkata")!
+  // Appending "kolkata" poisons Swiggy's "Dishes" tab, causing Swiggy to search for dishes
+  // containing the word "kolkata" (e.g. "Kolkata Chicken Bharta" from Rang De Basanti Dhaba)!
+  // By querying the clean brand name (e.g. "Banana Leaf"), Swiggy identifies it as a
+  // Restaurant Brand and directly opens the restaurant!
+  if (platform === 'swiggy') {
+    const swiggyQuery = brandName;
+    return `https://www.swiggy.com/search?query=${encodeURIComponent(swiggyQuery)}`;
+  }
+
+  // For Zomato: pass brand + city
+  const zomatoQuery = `${brandName} ${city || area}`.trim();
+  return `https://www.zomato.com/search?q=${encodeURIComponent(zomatoQuery)}`;
 }
 
 // ============================================================================
