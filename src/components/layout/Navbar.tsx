@@ -233,6 +233,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {[
             { id: 'home', key: 'navHome', fallback: 'Home Search 🔍' },
             { id: 'direct', key: 'navDirect', fallback: 'PriceBite Direct (Order Food In-App) ⚡' },
+            { id: 'local', key: 'navLocal', fallback: 'Local Gems Hub 🏪' },
             { id: 'search', key: 'navCompare', fallback: 'Compare Platforms 📊' },
             { id: 'restaurants', key: 'navRestaurants', fallback: 'Restaurant Matrix 🍔' },
             { id: 'rewards', key: 'navRewards', fallback: 'Smart Rewards 🎁' },

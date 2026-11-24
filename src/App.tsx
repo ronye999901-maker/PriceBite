@@ -16,6 +16,7 @@ import { UserProfile as UserProfileView } from './components/profile/UserProfile
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { PriceBiteDirectHub } from './components/direct/PriceBiteDirectHub';
 import { QuickMartHub } from './components/direct/QuickMartHub';
+import { LocalRestaurantHub } from './components/local/LocalRestaurantHub';
 import { AuthModal } from './components/auth/AuthModal';
 import { CartDrawer } from './components/cart/CartDrawer';
 import { UPIPaymentModal } from './components/checkout/UPIPaymentModal';
@@ -64,7 +65,7 @@ export function App() {
   const [currentPinDetails, setCurrentPinDetails] = useState<PINCodeDetails | null>(null);
 
   const [activeTab, setActiveTab] = useState<
-    'home' | 'direct' | 'quickmart' | 'search' | 'restaurants' | 'rewards' | 'profile' | 'admin'
+    'home' | 'direct' | 'local' | 'quickmart' | 'search' | 'restaurants' | 'rewards' | 'profile' | 'admin'
   >('home');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -523,6 +524,15 @@ export function App() {
             onOpenPinModal={() => setIsPinModalOpen(true)}
             themeMode={themeMode}
             userProfile={userProfile}
+          />
+        )}
+
+        {activeTab === 'local' && (
+          <LocalRestaurantHub
+            currentPinDetails={currentPinDetails}
+            onOpenPinModal={() => setIsPinModalOpen(true)}
+            onAddToCart={handleAddToCart}
+            themeMode={themeMode}
           />
         )}
 
