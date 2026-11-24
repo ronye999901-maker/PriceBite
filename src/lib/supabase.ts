@@ -164,6 +164,176 @@ export async function fetchUserOrdersFromCloud(userId: string) {
   }
 }
 
+// ============================================================
+// LOCAL GEMS HUB — Supabase Functions
+// ============================================================
+
+export interface LocalDishDB {
+  id: string;
+  restaurant_id: string;
+  name: string;
+  price: number;
+  is_veg: boolean;
+  portion: string;
+  is_available: boolean;
+}
+
+export interface LocalRestaurantDB {
+  id: string;
+  name: string;
+  area: string;
+  pin_code: string;
+  cuisine: string;
+  owner_name: string;
+  owner_phone: string;
+  owner_email?: string;
+  is_pure_veg: boolean;
+  delivery_minutes: number;
+  image_url: string;
+  status: 'pending' | 'approved' | 'rejected';
+  admin_note?: string;
+  created_at: string;
+  dishes?: LocalDishDB[];
+}
+
+/** Submit a new restaurant registration (owner flow). Status = pending. */
+export async function submitLocalRestaurant(data: {
+  name: string;
+  area: string;
+  pin_code: string;
+  cuisine: string;
+  owner_name: string;
+  owner_phone: string;
+  owner_email?: string;
+  is_pure_veg: boolean;
+  delivery_minutes?: number;
+  dishes: Array<{ name: string; price: number; is_veg: boolean; portion: string }>;
+}): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Supabase not configured.' };
+
+  try {
+    // Insert restaurant (status = 'pending')
+    const { data: rest, error: restErr } = await supabase
+      .from('local_restaurants')
+      .insert({
+        name: data.name,
+        area: data.area,
+        pin_code: data.pin_code,
+        cuisine: data.cuisine,
+        owner_name: data.owner_name,
+        owner_phone: data.owner_phone,
+        owner_email: data.owner_email || '',
+        is_pure_veg: data.is_pure_veg,
+        delivery_minutes: data.delivery_minutes || 25,
+        status: 'pending',
+      })
+      .select('id')
+      .single();
+
+    if (restErr || !rest) {
+      console.error('❌ Local restaurant submit error:', restErr?.message);
+      return { success: false, error: restErr?.message || 'Failed to submit.' };
+    }
+
+    // Insert dishes
+    if (data.dishes.length > 0) {
+      const dishRows = data.dishes.map((d) => ({
+        restaurant_id: rest.id,
+        name: d.name,
+        price: d.price,
+        is_veg: d.is_veg,
+        portion: d.portion,
+        is_available: true,
+      }));
+      const { error: dishErr } = await supabase.from('local_dishes').insert(dishRows);
+      if (dishErr) {
+        console.error('❌ Local dish insert error:', dishErr.message);
+      }
+    }
+
+    console.log('✅ Local restaurant submitted:', data.name);
+    return { success: true };
+  } catch (err: any) {
+    console.error('❌ submitLocalRestaurant exception:', err);
+    return { success: false, error: err?.message || 'Unknown error.' };
+  }
+}
+
+/** Fetch all approved local restaurants (optionally filter by PIN). */
+export async function fetchApprovedLocalRestaurants(pinCode?: string): Promise<LocalRestaurantDB[]> {
+  if (!supabase) return [];
+
+  try {
+    let query = supabase
+      .from('local_restaurants')
+      .select('*, dishes:local_dishes(*)')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+
+    if (pinCode) {
+      query = query.eq('pin_code', pinCode);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('❌ fetchApprovedLocalRestaurants error:', error.message);
+      return [];
+    }
+    return (data || []) as LocalRestaurantDB[];
+  } catch (err) {
+    console.error('❌ fetchApprovedLocalRestaurants exception:', err);
+    return [];
+  }
+}
+
+/** Fetch ALL local restaurants for admin (all statuses). */
+export async function fetchAllLocalRestaurantsAdmin(): Promise<LocalRestaurantDB[]> {
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('local_restaurants')
+      .select('*, dishes:local_dishes(*)')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ fetchAllLocalRestaurantsAdmin error:', error.message);
+      return [];
+    }
+    return (data || []) as LocalRestaurantDB[];
+  } catch (err) {
+    console.error('❌ fetchAllLocalRestaurantsAdmin exception:', err);
+    return [];
+  }
+}
+
+/** Admin: Approve or reject a restaurant. */
+export async function updateLocalRestaurantStatus(
+  id: string,
+  status: 'approved' | 'rejected',
+  adminNote?: string
+): Promise<boolean> {
+  if (!supabase) return false;
+
+  try {
+    const { error } = await supabase
+      .from('local_restaurants')
+      .update({ status, admin_note: adminNote || '', updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) {
+      console.error('❌ updateLocalRestaurantStatus error:', error.message);
+      return false;
+    }
+    console.log(`✅ Restaurant ${id} → ${status}`);
+    return true;
+  } catch (err) {
+    console.error('❌ updateLocalRestaurantStatus exception:', err);
+    return false;
+  }
+}
+
+// ============================================================
 // Live Price Drop Alert Sync Function
 export async function syncPriceAlertToCloud(alert: {
   userId: string;

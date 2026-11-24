@@ -21,6 +21,11 @@ import {
   Terminal,
   Radio,
   Sliders,
+  Store,
+  Phone,
+  Mail,
+  Loader2,
+  XCircle,
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../../i18n/languages';
 import {
@@ -64,9 +69,41 @@ import {
 } from '../../engine/recommendationEngine';
 import { getProductsForLocation } from '../../mock/foodData';
 import { PlatformId } from '../../types';
+import {
+  fetchAllLocalRestaurantsAdmin,
+  updateLocalRestaurantStatus,
+  LocalRestaurantDB,
+  isSupabaseConfigured,
+} from '../../lib/supabase';
 
 export const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'matching' | 'topsis' | 'adapters' | 'pincodes' | 'i18n'>('matching');
+  const [activeTab, setActiveTab] = useState<'matching' | 'topsis' | 'adapters' | 'pincodes' | 'i18n' | 'localgems'>('matching');
+
+  // ── Local Gems Admin State ──────────────────────────────────────────────
+  const [localRestaurants, setLocalRestaurants] = useState<LocalRestaurantDB[]>([]);
+  const [localGemsLoading, setLocalGemsLoading] = useState(false);
+  const [localGemsFilter, setLocalGemsFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
+  const [adminNote, setAdminNote] = useState<Record<string, string>>({});
+  const [localGemsToast, setLocalGemsToast] = useState<string | null>(null);
+
+  const loadLocalGems = async () => {
+    setLocalGemsLoading(true);
+    const data = await fetchAllLocalRestaurantsAdmin();
+    setLocalRestaurants(data);
+    setLocalGemsLoading(false);
+  };
+
+  const handleLocalStatus = async (id: string, status: 'approved' | 'rejected') => {
+    const ok = await updateLocalRestaurantStatus(id, status, adminNote[id] || '');
+    if (ok) {
+      setLocalRestaurants((prev) => prev.map((r) => r.id === id ? { ...r, status } : r));
+      setLocalGemsToast(`Restaurant ${status === 'approved' ? '✅ Approved' : '❌ Rejected'} successfully!`);
+      setTimeout(() => setLocalGemsToast(null), 3000);
+    } else {
+      setLocalGemsToast('⚠️ Failed to update — check Supabase connection.');
+      setTimeout(() => setLocalGemsToast(null), 3500);
+    }
+  };
 
   // Benchmark state
   const [benchmarkReport, setBenchmarkReport] = useState<BenchmarkEvaluationReport | null>(null);
@@ -265,6 +302,7 @@ export const AdminDashboard: React.FC = () => {
           { id: 'adapters', label: 'Live Ingestion & Resilient Cache Monitor ⚡' },
           { id: 'pincodes', label: 'Hyperlocal PIN Engine 📍' },
           { id: 'i18n', label: '23 Languages i18n Matrix 🌐' },
+          { id: 'localgems', label: 'Local Gems Approvals 🏪' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -987,6 +1025,141 @@ export const AdminDashboard: React.FC = () => {
                 <span className="text-[10px] text-slate-400">{lang.name} ({lang.region})</span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+      {/* TAB 6: LOCAL GEMS APPROVALS */}
+      {activeTab === 'localgems' && (
+        <div className="space-y-6">
+          {/* Toast */}
+          {localGemsToast && (
+            <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-emerald-700 border border-emerald-500/50 text-white text-sm font-bold shadow-2xl">
+              {localGemsToast}
+            </div>
+          )}
+
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-lg font-black text-slate-100 flex items-center space-x-2">
+                  <Store className="w-5 h-5 text-orange-400" />
+                  <span>Local Gems — Restaurant Approval Panel</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Approve or reject restaurant submissions from local owners. Approved restaurants go live for all buyers in Local Gems Hub.
+                </p>
+              </div>
+              <button
+                onClick={loadLocalGems}
+                disabled={localGemsLoading}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-cyan-400 text-xs font-bold hover:border-cyan-500 transition-all"
+              >
+                {localGemsLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                {localGemsLoading ? 'Loading...' : 'Load Submissions'}
+              </button>
+            </div>
+
+            {/* Supabase warning */}
+            {!isSupabaseConfigured && (
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <span>Supabase is not configured. Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> to your Vercel environment variables and run the SQL migration in <code>supabase/local_restaurants_migration.sql</code>.</span>
+              </div>
+            )}
+
+            {/* Filter tabs */}
+            <div className="flex gap-2 text-xs font-bold">
+              {(['all', 'pending', 'approved', 'rejected'] as const).map((f) => {
+                const count = f === 'all' ? localRestaurants.length : localRestaurants.filter((r) => r.status === f).length;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setLocalGemsFilter(f)}
+                    className={`px-4 py-2 rounded-xl transition-all capitalize ${localGemsFilter === f ? (f === 'pending' ? 'bg-amber-500/20 border border-amber-500 text-amber-400' : f === 'approved' ? 'bg-emerald-500/20 border border-emerald-500 text-emerald-400' : f === 'rejected' ? 'bg-rose-500/20 border border-rose-500 text-rose-400' : 'bg-slate-700 border border-slate-600 text-slate-100') : 'text-slate-400 hover:text-slate-200'}`}
+                  >
+                    {f} ({count})
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Restaurant cards */}
+            {localRestaurants.length === 0 && !localGemsLoading ? (
+              <div className="text-center py-12 text-slate-500">
+                <Store className="w-10 h-10 mx-auto mb-3 text-slate-700" />
+                <p className="text-sm font-bold">No submissions yet.</p>
+                <p className="text-xs mt-1">Click "Load Submissions" to fetch from Supabase.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {localRestaurants
+                  .filter((r) => localGemsFilter === 'all' || r.status === localGemsFilter)
+                  .map((rest) => (
+                    <div key={rest.id} className={`rounded-2xl border p-5 space-y-3 ${rest.status === 'pending' ? 'border-amber-500/30 bg-amber-500/5' : rest.status === 'approved' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5'}`}>
+                      {/* Top row */}
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="text-sm font-black text-slate-100">{rest.name}</h4>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${rest.status === 'pending' ? 'bg-amber-500/20 text-amber-400' : rest.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                              {rest.status}
+                            </span>
+                            {rest.is_pure_veg && <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">Pure Veg</span>}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1">📍 {rest.area} • PIN {rest.pin_code} • {rest.cuisine} • ~{rest.delivery_minutes} min</p>
+                          <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-400">
+                            <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-cyan-400" />{rest.owner_name} — {rest.owner_phone}</span>
+                            {rest.owner_email && <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5 text-cyan-400" />{rest.owner_email}</span>}
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-slate-500 whitespace-nowrap">{new Date(rest.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
+
+                      {/* Dishes preview */}
+                      {(rest.dishes || []).length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {(rest.dishes || []).map((d) => (
+                            <span key={d.id} className="px-2.5 py-1 rounded-xl bg-slate-800 border border-slate-700 text-[11px] text-slate-300 font-semibold">
+                              {d.is_veg ? '🟢' : '🔴'} {d.name} — ₹{d.price}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Admin note + actions (only for pending) */}
+                      {rest.status === 'pending' && (
+                        <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                          <input
+                            type="text"
+                            placeholder="Admin note (optional, shown to owner)"
+                            value={adminNote[rest.id] || ''}
+                            onChange={(e) => setAdminNote((prev) => ({ ...prev, [rest.id]: e.target.value }))}
+                            className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 outline-none focus:border-orange-500"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleLocalStatus(rest.id, 'approved')}
+                              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
+                            >
+                              <CheckCircle2 className="w-4 h-4" /> Approve
+                            </button>
+                            <button
+                              onClick={() => handleLocalStatus(rest.id, 'rejected')}
+                              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-600 text-white text-xs font-black transition-colors"
+                            >
+                              <XCircle className="w-4 h-4" /> Reject
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      {rest.admin_note && rest.status !== 'pending' && (
+                        <p className="text-xs text-slate-400 italic">Admin note: {rest.admin_note}</p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         </div>
       )}
